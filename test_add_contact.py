@@ -15,7 +15,6 @@ class TestAddContact(unittest.TestCase):
 
     def test_add_contact(self):
         wd = self.wd
-        self.open_home_page(wd)
         self.login(wd, username="admin", password="secret")
         self.create_new_contact(wd, Contact(firstname="first", middlename="middle", lastname="last", nickname="nick",
                                             title="title", company="comp", address="address", home_phone="123-456",
@@ -27,7 +26,6 @@ class TestAddContact(unittest.TestCase):
 
     def test_add_empty_contact(self):
         wd = self.wd
-        self.open_home_page(wd)
         self.login(wd, username="admin", password="secret")
         self.create_new_contact(wd, Contact(firstname="", middlename="", lastname="", nickname="",
                                             title="", company="", address="", home_phone="",
@@ -112,6 +110,7 @@ class TestAddContact(unittest.TestCase):
         wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
 
     def login(self, wd: WebDriver, username, password):
+        self.open_home_page(wd)
         wd.find_element(By.NAME, "user").click()
         wd.find_element(By.NAME, "user").clear()
         wd.find_element(By.NAME, "user").send_keys(username)
