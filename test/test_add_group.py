@@ -16,12 +16,12 @@ def app(request):
 
 def test_add_group(app):
     # calling new helper methods that we created by refactoring
-    app.login(username="admin", password="secret")
+    app.session.login(username="admin", password="secret")
     app.create_group(Group(name="dfgdfgdfg", header="dfgdfg", footer="dfgfgd"))
-    app.logout()
+    app.session.logout()
 
 def test_add_empty_group(app):
     # calling new helper methods that we created by refactoring
-    app.login(username="admin", password="secret")
+    app.session.login(username="admin", password="secret")
     app.create_group(Group(name="", header="", footer=""))
-    app.logout()
+    app.session.logout()
