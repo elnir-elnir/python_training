@@ -7,6 +7,7 @@ class ContactHelper:
     def __init__(self, app):
         self.app = app
 
+
     def create(self, contact):
         wd = self.app.wd
         wd.find_element(By.LINK_TEXT, "add new").click()
@@ -76,5 +77,30 @@ class ContactHelper:
         wd.find_element(By.NAME, "ayear").send_keys(contact.ayear)
         wd.find_element(By.NAME, "new_group").click()
         Select(wd.find_element(By.NAME, "new_group")).select_by_visible_text(contact.new_group)
-        wd.find_element(By.CSS_SELECTOR, f'select[name=new_group] > option[value="{contact.new_group}"]').click()
+        #wd.find_element(By.CSS_SELECTOR, f'select[name=new_group] > option[value="{contact.new_group}"]').click()
         wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
+
+
+    def open_contact_list_using_home_button(self):
+        wd = self.app.wd
+        wd.find_element(By.XPATH, "/html/body/div/div[3]/ul/li[1]/a").click()
+
+
+    def open_contact_list_using_addressbook_link(self):
+        wd = self.app.wd
+        wd.find_element(By.ID, "logo").click()
+
+
+    def select_contact_by_lastname(self, lastname):
+        wd = self.app.wd
+        row_xpath = f"//tr[@name='entry' and td[2][normalize-space()='{lastname}']]"
+        #wd.execute_script("arguments[0].scrollIntoView({block: 'center'}):", row_xpath)
+        row = wd.find_element(By.XPATH, row_xpath)
+        row.find_element(By.XPATH, ".//input[@type='checkbox']").click()
+
+
+    def set_group(self, group):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "to_group").click()
+        Select(wd.find_element(By.NAME, "to_group")).select_by_visible_text(group.name)
+        wd.find_element(By.NAME, "add").click()
