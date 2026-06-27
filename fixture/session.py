@@ -1,10 +1,17 @@
+#------------------------------------------------------------------------------
+# qa:
+# description:
+#------------------------------------------------------------------------------
+
 from selenium.webdriver.common.by import By
+
 
 
 class SessionHelper:
 
     def __init__(self, app):
         self.app = app
+
 
     def login(self, password, username):
         wd = self.app.wd
@@ -15,6 +22,7 @@ class SessionHelper:
         wd.find_element(By.NAME, "pass").clear()
         wd.find_element(By.NAME, "pass").send_keys(password)
         wd.find_element(By.XPATH, "//input[@value='Login']").click()
+
 
     def logout(self):
         wd = self.app.wd

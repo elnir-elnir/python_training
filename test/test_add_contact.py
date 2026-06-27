@@ -1,6 +1,10 @@
-# -*- coding: utf-8 -*-
+#------------------------------------------------------------------------------
+# qa:
+# description:
+#------------------------------------------------------------------------------
 
 from model.contact import Contact
+
 
 
 def test_add_contact(app):
@@ -12,6 +16,8 @@ def test_add_contact(app):
                                bday="1", bmonth="January", byear="2000", aday="2", amonth="February",
                                ayear="2020", new_group="[none]"))
     app.session.logout()
+
+
 
 def test_add_empty_contact(app):
     app.session.login(username="admin", password="secret")

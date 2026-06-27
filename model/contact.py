@@ -1,5 +1,11 @@
+# ------------------------------------------------------------------------------
+# qa:
+# description:
+# ------------------------------------------------------------------------------
+
 class Contact:
-    def __init__ (self, firstname, middlename, lastname, nickname, title, company, address, home_phone, mobile_phone, work_phone, email, email2, email3, homepage, bday, bmonth, byear, aday, amonth, ayear, new_group):
+    def __init__(self, firstname, middlename, lastname, nickname, title, company, address, home_phone, mobile_phone,
+                 work_phone, email, email2, email3, homepage, bday, bmonth, byear, aday, amonth, ayear, new_group):
         self.firstname = firstname
         self.middlename = middlename
         self.lastname = lastname
