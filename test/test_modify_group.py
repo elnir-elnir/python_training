@@ -11,7 +11,6 @@ def test_full_modify_new_group_initial_without_contacts(app):
     group = app.data.create_custom_group()
     app.data.full_modified_group(group)
     app.session.logout()
-    #print (group.name, group.header, group.footer)
 
 
 

@@ -55,6 +55,20 @@ class GroupHelper:
         self.return_to_groups_page()
 
 
+    def delete_group_by_name(self, group_name):
+        wd = self.app.wd
+        self.open_groups_page()
+        self.select_group_by_name(group_name)
+        wd.find_element(By.NAME, "delete").click()
+        self.return_to_groups_page()
+
+
+    def delete_group(self):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "delete").click()
+        self.return_to_groups_page()
+
+
     def select_group_by_name(self, group_name):
         wd = self.app.wd
         row_xpath = f"//span[@class='group' and normalize-space()='{group_name}']"
