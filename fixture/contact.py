@@ -108,6 +108,12 @@ class ContactHelper:
         row.find_element(By.XPATH, ".//input[@type='checkbox']").click()
 
 
+    def select_all_contacts(self):
+        wd = self.app.wd
+        row_xpath = f"//input[@id=\"MassCB\"]"
+        wd.find_element(By.XPATH, row_xpath).click()
+
+
     def set_group(self, group):
         wd = self.app.wd
         wd.find_element(By.NAME, "to_group").click()
@@ -181,6 +187,11 @@ class ContactHelper:
         wd.find_element(By.LINK_TEXT, "home page").click()
 
 
+    def return_to_home_page_after_contact_deletion(self):
+        wd = self.app.wd
+        wd.find_element(By.LINK_TEXT, "home page").click()
+
+
     def edit_contact_only_names(self, new_firstname, new_lastname, new_middlename):
         wd = self.app.wd
         wd.find_element(By.NAME, "firstname").click()
@@ -193,3 +204,18 @@ class ContactHelper:
         wd.find_element(By.NAME, "lastname").clear()
         wd.find_element(By.NAME, "lastname").send_keys(new_lastname)
         wd.find_element(By.NAME, "update").click()
+
+
+    def delete_contact_from_edit_page(self):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "delete").click()
+
+
+    def delete_contact_from_contact_list(self):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "delete").click()
+
+
+    def delete_modal_window_closed(self):
+        wd = self.app.wd
+        wd.switch_to.alert.accept()

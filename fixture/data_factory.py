@@ -75,6 +75,44 @@ class DataFactory:
         return contact
 
 
+    def create_several_contact_with_default_group(self):
+        contact1 = Contact(firstname="test_firstname1", middlename="test_middlename1", lastname="test_lastname1",
+                          nickname="test_nickname1", title="test_title1", company="test_company1", address="test_address1",
+                          home_phone="123-456", mobile_phone="+71234567890", work_phone="789-900",
+                          email="test@yandex.ru", email2="test@mail.ru", email3="test@gmail.com",
+                          homepage="https:\\test.ru", bday="1", bmonth="January", byear="2000", aday="2",
+                          amonth="February", ayear="2020", new_group="[none]")
+        self.app.contact.create(contact1)
+        contact2 = Contact(firstname="test_firstname2", middlename="test_middlename2", lastname="test_lastname2",
+                           nickname="test_nickname2", title="test_title2", company="test_company2",
+                           address="test_address2",
+                           home_phone="123-456", mobile_phone="+71234567890", work_phone="789-900",
+                           email="test@yandex.ru", email2="test@mail.ru", email3="test@gmail.com",
+                           homepage="https:\\test.ru", bday="1", bmonth="January", byear="2000", aday="2",
+                           amonth="February", ayear="2020", new_group="[none]")
+        self.app.contact.create(contact2)
+        return contact1, contact2
+
+
+    def create_several_contact_with_custom_group(self,group_name):
+        contact1 = Contact(firstname="test_firstname1", middlename="test_middlename1", lastname="test_lastname1",
+                          nickname="test_nickname1", title="test_title1", company="test_company1", address="test_address1",
+                          home_phone="123-456", mobile_phone="+71234567890", work_phone="789-900",
+                          email="test@yandex.ru", email2="test@mail.ru", email3="test@gmail.com",
+                          homepage="https:\\test.ru", bday="1", bmonth="January", byear="2000", aday="2",
+                          amonth="February", ayear="2020", new_group=group_name)
+        self.app.contact.create(contact1)
+        contact2 = Contact(firstname="test_firstname2", middlename="test_middlename2", lastname="test_lastname2",
+                           nickname="test_nickname2", title="test_title2", company="test_company2",
+                           address="test_address2",
+                           home_phone="123-456", mobile_phone="+71234567890", work_phone="789-900",
+                           email="test@yandex.ru", email2="test@mail.ru", email3="test@gmail.com",
+                           homepage="https:\\test.ru", bday="1", bmonth="January", byear="2000", aday="2",
+                           amonth="February", ayear="2020", new_group=group_name)
+        self.app.contact.create(contact2)
+        return contact1, contact2
+
+
     def create_contact_with_custom_group(self, group_name):
         contact = Contact(firstname="test_firstname", middlename="test_middlename", lastname="test_lastname",
                           nickname="test_nickname", title="test_title", company="test_company", address="test_address",

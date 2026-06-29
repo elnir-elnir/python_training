@@ -2,8 +2,6 @@
 # qa:
 # description:
 #------------------------------------------------------------------------------
-import time
-
 
 def test_exclude_contact_from_single_custom_group_via_home(app):
     app.user.login()
@@ -50,9 +48,3 @@ def test_exclude_contact_from_one_of_several_groups_via_home(app):
     app.contact.filter_contacts_by_group(group1.name)
     app.contact.filter_contacts_by_group(group2.name)
     app.session.logout()
-
-
-#test_exclude_modified_contact_from_single_group_via_home
-
-
-#test_exclude_modified_contact_from_modified_group_via_home
