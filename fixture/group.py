@@ -23,6 +23,13 @@ class GroupHelper:
         wd.find_element(By.LINK_TEXT, "group page").click()
 
 
+    def go_to_group_page(self, group_name):
+        wd = self.app.wd
+        row_xpath = f"//div[@id='content']//a[contains(text(), 'group page \"{group_name}\"')]"
+        group_page_link = wd.find_element(By.XPATH, row_xpath)
+        group_page_link.click()
+
+
     def create(self, group):
         wd = self.app.wd
         # open groups page replaced from tests to create_group method
@@ -51,6 +58,20 @@ class GroupHelper:
         # select first group
         wd.find_element(By.NAME, "selected[]").click()
         # submit deletion
+        wd.find_element(By.NAME, "delete").click()
+        self.return_to_groups_page()
+
+
+    def delete_group_by_name(self, group_name):
+        wd = self.app.wd
+        self.open_groups_page()
+        self.select_group_by_name(group_name)
+        wd.find_element(By.NAME, "delete").click()
+        self.return_to_groups_page()
+
+
+    def delete_group(self):
+        wd = self.app.wd
         wd.find_element(By.NAME, "delete").click()
         self.return_to_groups_page()
 
