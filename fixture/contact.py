@@ -87,6 +87,11 @@ class ContactHelper:
         wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
 
 
+    def go_to_next_contact_creation(self):
+        wd = self.app.wd
+        wd.find_element(By.LINK_TEXT, "add next").click()
+
+
     def open_contact_list_via_home_button(self):
         wd = self.app.wd
         wd.find_element(By.XPATH, "/html/body/div/div[3]/ul/li[1]/a").click()

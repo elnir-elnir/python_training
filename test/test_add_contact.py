@@ -19,6 +19,16 @@ def test_add_contact(app):
 
 
 
+def test_add_new_contact_when_contact_created_via_add_next_from_confirm_page(app):
+    app.user.login()
+    app.data.create_contact_with_default_group()
+    app.contact.go_to_next_contact_creation()
+    app.data.create_contact_with_default_group()
+    app.contact.open_contact_list_via_addressbook_link()
+    app.session.logout()
+
+
+
 def test_add_empty_contact(app):
     app.session.login(username="admin", password="secret")
     app.contact.create(Contact(firstname="", middlename="", lastname="", nickname="",
