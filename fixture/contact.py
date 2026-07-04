@@ -17,6 +17,15 @@ class ContactHelper:
     def create(self, contact):
         wd = self.app.wd
         wd.find_element(By.LINK_TEXT, "add new").click()
+        self.fill_contact_form(contact)
+        wd.find_element(By.NAME, "new_group").click()
+        Select(wd.find_element(By.NAME, "new_group")).select_by_visible_text(contact.new_group)
+        #wd.find_element(By.CSS_SELECTOR, f'select[name=new_group] > option[value="{contact.new_group}"]').click()
+        wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
+
+
+    def fill_contact_form(self, contact):
+        wd = self.app.wd
         wd.find_element(By.NAME, "firstname").click()
         wd.find_element(By.NAME, "firstname").clear()
         wd.find_element(By.NAME, "firstname").send_keys(contact.firstname)
@@ -77,14 +86,11 @@ class ContactHelper:
         Select(wd.find_element(By.NAME, "amonth")).select_by_visible_text(contact.amonth)
         # code line from recorder has been fixed to its one
         #wd.find_element(By.XPATH, "//div[@id='content']/form/select[4]/option[3]").click()
-        wd.find_element(By.CSS_SELECTOR, f'select[name="amonth"] > option[value="{contact.amonth}"]').click()
+        #wd.find_element(By.CSS_SELECTOR, f'select[name="amonth"] > option[value="{contact.amonth}"]').click()
         wd.find_element(By.NAME, "ayear").click()
         wd.find_element(By.NAME, "ayear").clear()
         wd.find_element(By.NAME, "ayear").send_keys(contact.ayear)
-        wd.find_element(By.NAME, "new_group").click()
-        Select(wd.find_element(By.NAME, "new_group")).select_by_visible_text(contact.new_group)
-        #wd.find_element(By.CSS_SELECTOR, f'select[name=new_group] > option[value="{contact.new_group}"]').click()
-        wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
+
 
 
     def go_to_next_contact_creation(self):
@@ -197,17 +203,9 @@ class ContactHelper:
         wd.find_element(By.LINK_TEXT, "home page").click()
 
 
-    def edit_contact_only_names(self, new_firstname, new_lastname, new_middlename):
+    def edit_contact_only_names(self, contact):
         wd = self.app.wd
-        wd.find_element(By.NAME, "firstname").click()
-        wd.find_element(By.NAME, "firstname").clear()
-        wd.find_element(By.NAME, "firstname").send_keys(new_firstname)
-        wd.find_element(By.NAME, "middlename").click()
-        wd.find_element(By.NAME, "middlename").clear()
-        wd.find_element(By.NAME, "middlename").send_keys(new_middlename)
-        wd.find_element(By.NAME, "lastname").click()
-        wd.find_element(By.NAME, "lastname").clear()
-        wd.find_element(By.NAME, "lastname").send_keys(new_lastname)
+        self.fill_contact_form(contact)
         wd.find_element(By.NAME, "update").click()
 
 
