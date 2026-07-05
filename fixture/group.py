@@ -133,3 +133,32 @@ class GroupHelper:
         # submit modification
         wd.find_element(By.NAME, "update").click()
         self.return_to_groups_page()
+
+
+    # Добавялем метод подсчета количества чек-боксов на странице groups (определяем количество
+    # созданных групп) - урок 3-5
+    def count(self):
+        wd = self.app.wd
+        self.open_groups_page()
+
+        # wd.find_elements(By.NAME, "selected[]") - находим на странице все элементы
+        # с названием "selected[]"
+        # len(wd.find_elements(By.NAME, "selected[]")) - считаем количество найденных элементов
+        return len(wd.find_elements(By.NAME, "selected[]"))
+
+
+    # Добавляем метод подсчета количества групп по имени (урок 3-5)
+    def count_group_by_name(self, group_name):
+        wd = self.app.wd
+        self.open_groups_page()
+        row_xpath = f"//span[@class='group' and normalize-space()='{group_name}']"
+        row = wd.find_elements(By.XPATH, row_xpath)
+        return len(row)
+
+    # Добавялем метод подсчета количества чек-боксов на странице контактов (определяем количество
+    # созданных контактов) - урок 3-5
+    def count_of_contacts_in_group(self, group_name):
+        wd = self.app.wd
+        self.app.contact.open_contact_list_via_home_button()
+        self.app.contact.filter_contacts_by_group(group_name)
+        return len(wd.find_elements(By.NAME, "selected[]"))

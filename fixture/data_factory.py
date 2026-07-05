@@ -132,7 +132,7 @@ class DataFactory:
         contact = self.create_contact_with_default_group()
         self.app.contact.open_contact_list_via_home_button()
         self.app.contact.select_contact_by_lastname(contact.lastname)
-        self.app.contact.set_group(modified_group)
+        self.app.contact.set_group(modified_group.name)
 
 
     def contact_with_modified_names_via_details_from_home_page(self):

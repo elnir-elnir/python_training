@@ -125,10 +125,16 @@ class ContactHelper:
         wd.find_element(By.XPATH, row_xpath).click()
 
 
-    def set_group(self, group):
+    # add new method (lesson 3-5)
+    def select_first_contact(self):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "selected[]").click()
+
+
+    def set_group(self, group_name):
         wd = self.app.wd
         wd.find_element(By.NAME, "to_group").click()
-        Select(wd.find_element(By.NAME, "to_group")).select_by_visible_text(group.name)
+        Select(wd.find_element(By.NAME, "to_group")).select_by_visible_text(group_name)
         wd.find_element(By.NAME, "add").click()
 
 
@@ -167,6 +173,19 @@ class ContactHelper:
         row_xpath = f"//tr[@name='entry' and td[2][normalize-space()='{lastname}']]//a[img/@title='Edit']"
         edit_link = wd.find_element(By.XPATH, row_xpath)
         edit_link.click()
+
+
+    # Добавлен метод для перехода в редактирование первого в списке контакта (урок 3-5)
+    def go_to_edit_page_of_first_contact_from_contact_list(self):
+        wd = self.app.wd
+        #wd.find_element(By.XPATH, "//tr[@name='entry'][1]//img[@title='Edit']").click()
+        wd.find_element(By.XPATH, "(//tr[@name='entry' and not(contains(@style, 'display: none'))]//a[img/@title='Edit'])[1]").click()
+
+
+    # Добавлен метод для перехода в редактирование первого в списке дней рождений (урок 3-5)
+    def go_to_edit_page_of_first_contact_from_birthdays_page(self):
+        wd = self.app.wd
+        wd.find_element(By.XPATH, "// img[ @ alt = 'Edit']").click()
 
 
     def go_to_next_birthdays_page(self):
@@ -222,3 +241,47 @@ class ContactHelper:
     def delete_modal_window_closed(self):
         wd = self.app.wd
         wd.switch_to.alert.accept()
+
+
+    # Добавялем метод подсчета количества чек-боксов на странице контактов (определяем количество
+    # созданных контактов) - урок 3-5
+    def count_of_contacts(self):
+        wd = self.app.wd
+        self.app.contact.open_contact_list_via_home_button()
+
+        # wd.find_elements(By.NAME, "selected[]") - находим на странице все элементы
+        # с названием "selected[]"
+        # len(wd.find_elements(By.NAME, "selected[]")) - считаем количество найденных элементов
+        return len(wd.find_elements(By.NAME, "selected[]"))
+
+
+    # Добавляем метод получения дня рождения контакта (bday) - урок 3-5
+    def get_bday(self):
+        wd = self.app.wd
+        select = Select(wd.find_element(By.NAME, "bday"))
+        bday = select.first_selected_option.get_attribute("value")
+        #return select.first_selected_option.get_attribute("value")
+        return bday
+
+
+    # Добавляем метод получения месяца рождения контакта (bmonth) - урок 3-5
+    def get_bmonth(self):
+        wd = self.app.wd
+        select = Select(wd.find_element(By.NAME, "bmonth"))
+        return select.first_selected_option.get_attribute("value")
+
+
+    # Добавлен метод установки даты рождения контакта (урок 3-5)
+    def set_birthday(self, bday, bmonth, byear):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "bday").click()
+        Select(wd.find_element(By.NAME, "bday")).select_by_visible_text(bday)
+        wd.find_element(By.XPATH, f"//option[@value='{bday}']").click()
+        wd.find_element(By.NAME, "bmonth").click()
+        Select(wd.find_element(By.NAME, "bmonth")).select_by_visible_text(bmonth)
+        wd.find_element(By.XPATH, f"//option[@value='{bmonth}']").click()
+        wd.find_element(By.NAME, "byear").click()
+        wd.find_element(By.NAME, "byear").clear()
+        wd.find_element(By.NAME, "byear").send_keys(byear)
+        wd.find_element(By.NAME, "update").click()
+

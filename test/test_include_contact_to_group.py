@@ -17,7 +17,7 @@ def test_include_created_contact_in_custom_group_after_home_click(app):
     contact = app.data.create_contact_with_default_group()
     app.contact.open_contact_list_via_home_button()
     app.contact.select_contact_by_lastname(contact.lastname)
-    app.contact.set_group(group)
+    app.contact.set_group(group.name)
 
 
 
@@ -26,7 +26,7 @@ def test_include_created_contact_in_custom_group_after_logo_click(app):
     contact = app.data.create_contact_with_default_group()
     app.contact.open_contact_list_via_addressbook_link()
     app.contact.select_contact_by_lastname(contact.lastname)
-    app.contact.set_group(group)
+    app.contact.set_group(group.name)
 
 
 
@@ -51,7 +51,7 @@ def test_include_modified_contact_in_custom_group_via_home(app):
     app.contact.go_to_edit_page_from_details_page()
     modified_contact = app.data.contact_with_modified_names(contact)
     app.contact.select_contact_by_lastname(modified_contact.lastname)
-    app.contact.set_group(group)
+    app.contact.set_group(group.name)
 
 
 
@@ -60,10 +60,10 @@ def test_include_created_contact_in_multiple_groups_sequentially_via_home(app):
     contact = app.data.create_contact_with_default_group()
     app.contact.open_contact_list_via_home_button()
     app.contact.select_contact_by_lastname(contact.lastname)
-    app.contact.set_group(group1)
+    app.contact.set_group(group1.name)
     app.contact.open_contact_list_via_home_button()
     app.contact.select_contact_by_lastname(contact.lastname)
-    app.contact.set_group(group2)
+    app.contact.set_group(group2.name)
 
 
 
@@ -75,10 +75,10 @@ def test_include_modified_contact_in_multiple_groups_sequentially_via_home(app):
     app.contact.go_to_edit_page_from_details_page()
     modified_contact = app.data.contact_with_modified_names(contact)
     app.contact.select_contact_by_lastname(modified_contact.lastname)
-    app.contact.set_group(group1)
+    app.contact.set_group(group1.name)
     app.group.go_to_group_page(group1.name)
     app.contact.select_contact_by_lastname(modified_contact.lastname)
-    app.contact.set_group(group2)
+    app.contact.set_group(group2.name)
     app.group.go_to_group_page(group2.name)
 
 
@@ -89,7 +89,7 @@ def test_reinclude_created_contact_in_another_group_after_exclusion_via_home(app
     contact = app.data.create_contact_with_default_group()
     app.contact.open_contact_list_via_home_button()
     app.contact.select_contact_by_lastname(contact.lastname)
-    app.contact.set_group(group1)
+    app.contact.set_group(group1.name)
     app.contact.open_contact_list_via_home_button()
     app.contact.filter_contacts_by_group(group1.name)
     app.contact.select_contact_by_lastname(contact.lastname)
@@ -97,7 +97,7 @@ def test_reinclude_created_contact_in_another_group_after_exclusion_via_home(app
     app.contact.open_contact_list_via_home_button()
     app.contact.reset_contacts_filter()
     app.contact.select_contact_by_lastname(contact.lastname)
-    app.contact.set_group(group2)
+    app.contact.set_group(group2.name)
     app.contact.open_contact_list_via_home_button()
     app.contact.filter_contacts_by_group(group1.name)
     app.contact.filter_contacts_by_group(group2.name)
@@ -109,5 +109,5 @@ def test_include_all_created_contacts_in_group(app):
     contact1, contact2 = app.data.create_several_contact_with_default_group()
     app.contact.return_to_home_page_after_contact_creation()
     app.contact.select_all_contacts()
-    app.contact.set_group(group)
+    app.contact.set_group(group.name)
 
