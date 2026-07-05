@@ -20,17 +20,15 @@ def app(request):
     if fixture is None:
         # fixture has been initialized
         fixture = Application()
-        fixture.session.login(username="admin", password="secret")
     else:
         # We determine what to do if fixture has been corrupted (lesson 3-3)
         if not fixture.is_valid():
             fixture = Application()
-            fixture.session.login(username="admin", password="secret")
 
     # # lesson 3-4 - Функция login вынесена из if-then и заменена на интеллектуальную функцию
     # # ensure_login, чтобы выполняеть проверку, нужно ли нам выполнять логин, при каждом обращении
     # # к функции, инициализирующей фикстуру
-    # fixture.session.login(username="admin", password="secret")
+    fixture.session.ensure_login(username="admin", password="secret")
     return fixture
 
 
@@ -40,7 +38,7 @@ def app(request):
 def stop(request):
     def fin():
         # Logout function has been changed on new ensure_logout function (lesson 3-4)
-        fixture.session.logout()
+        fixture.session.ensure_logout()
         fixture.destroy()
     request.addfinalizer(fin)
     return fixture
