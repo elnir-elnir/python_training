@@ -28,6 +28,17 @@ class Application:
         self.user = UserHelper(self)
 
 
+    # Checks that the WebDriver can interact with the current browser window    #
+    # Used for safe execution of operations when the browser may be closed
+    def is_valid(self):
+        try:
+            # Requesting the URL of the currently open page
+            self.wd.current_url
+            return True
+        except:
+            return False
+
+
     def open_home_page(self):
         wd = self.wd
         wd.get("http://localhost/addressbook/")
