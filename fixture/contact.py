@@ -247,7 +247,6 @@ class ContactHelper:
     # созданных контактов) - урок 3-5
     def count_of_contacts(self):
         wd = self.app.wd
-        self.app.contact.open_contact_list_via_home_button()
 
         # wd.find_elements(By.NAME, "selected[]") - находим на странице все элементы
         # с названием "selected[]"
