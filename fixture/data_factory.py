@@ -147,7 +147,7 @@ class DataFactory:
 
         modified_contact = Contact(firstname=new_firstname, middlename=new_middlename, lastname=new_lastname, nickname=contact.nickname, title=contact.title, company=contact.company, address=contact.address, home_phone=contact.home_phone, mobile_phone=contact.mobile_phone,
                  work_phone=contact.work_phone, email=contact.email, email2=contact.email2, email3=contact.email3, homepage=contact.homepage, bday=contact.bday, bmonth=contact.bmonth, byear=contact.byear, aday=contact.aday, amonth=contact.amonth, ayear=contact.ayear, new_group=contact.new_group)
-        self.app.contact.edit_contact_only_names(modified_contact)
+        self.app.contact.edit_contact(modified_contact)
         self.app.contact.return_to_home_page_after_contact_edit()
         return modified_contact
 
@@ -165,8 +165,20 @@ class DataFactory:
                                    email3=contact.email3, homepage=contact.homepage, bday=contact.bday,
                                    bmonth=contact.bmonth, byear=contact.byear, aday=contact.aday, amonth=contact.amonth,
                                    ayear=contact.ayear, new_group=contact.new_group)
-        self.app.contact.edit_contact_only_names(modified_contact)
+        self.app.contact.edit_contact(modified_contact)
         self.app.contact.return_to_home_page_after_contact_edit()
+        return modified_contact
+
+
+    def set_modified_contact(self):
+        modified_contact = Contact(firstname="modified_test_firstname", middlename="modified_test_lastname", lastname="modified_test_middlename",
+                                   nickname="modified_test_nickname", title="modified_test_title", company="modified_test_company",
+                                   address="modified_test_address", home_phone="999-999",
+                                   mobile_phone="+79999999999",
+                                   work_phone="(111)111-11-11", email="modified_test_email@mail.ru", email2="modified_test_email2@gmail.com",
+                                   email3="modified_test_email3@ya.ru", homepage="https:\\\\modified_test_homepage.ru", bday="15",
+                                   bmonth="December", byear="2000", aday="30", amonth="November",
+                                   ayear="2010", new_group="modified_test_new_group")
         return modified_contact
 
 
@@ -187,6 +199,6 @@ class DataFactory:
                                    email3=contact.email3, homepage=contact.homepage, bday=contact.bday,
                                    bmonth=contact.bmonth, byear=contact.byear, aday=contact.aday, amonth=contact.amonth,
                                    ayear=contact.ayear, new_group=contact.new_group)
-        self.app.contact.edit_contact_only_names(modified_contact)
+        self.app.contact.edit_contact(modified_contact)
         self.app.contact.return_to_home_page_after_contact_edit()
         return modified_contact

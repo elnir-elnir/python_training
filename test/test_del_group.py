@@ -38,6 +38,7 @@ def test_delete_custom_group_when_group_has_contacts(app):
         app.group.create(Group(name=group_name))
 
     # Добавляем проверку наличия созданных контактов (урок 3-5)
+    app.contact.open_contact_list_via_home_button()
     if app.contact.count_of_contacts() == 0:
         app.data.create_contact_with_custom_group(group_name)
     else:

@@ -163,6 +163,13 @@ class ContactHelper:
         details_link.click()
 
 
+    def go_to_details_page_of_first_contact_from_contact_list(self):
+        wd = self.app.wd
+        row_xpath = f"(//tr[@name='entry' and not(contains(@style, 'display: none'))]//a[img/@title='Details'])[1]"
+        details_link = wd.find_element(By.XPATH, row_xpath)
+        details_link.click()
+
+
     def go_to_edit_page_from_details_page(self):
         wd = self.app.wd
         wd.find_element(By.NAME, "modifiy").click()
@@ -207,6 +214,13 @@ class ContactHelper:
         details_link.click()
 
 
+    def go_to_details_page_of_first_page_from_birthday_list(self):
+        wd = self.app.wd
+        row_xpath  = f"(//a[img/@title='Details'])[1]"
+        details_link = wd.find_element(By.XPATH, row_xpath)
+        details_link.click()
+
+
     def return_to_home_page_after_contact_edit(self):
         wd = self.app.wd
         wd.find_element(By.LINK_TEXT, "home page").click()
@@ -222,7 +236,7 @@ class ContactHelper:
         wd.find_element(By.LINK_TEXT, "home page").click()
 
 
-    def edit_contact_only_names(self, contact):
+    def edit_contact(self, contact):
         wd = self.app.wd
         self.fill_contact_form(contact)
         wd.find_element(By.NAME, "update").click()
