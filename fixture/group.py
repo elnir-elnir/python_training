@@ -5,6 +5,7 @@
 
 from selenium.webdriver.common.by import By
 
+from model.group import Group
 
 
 class GroupHelper:
@@ -164,3 +165,32 @@ class GroupHelper:
         self.app.contact.open_contact_list_via_home_button()
         self.app.contact.filter_contacts_by_group(group_name)
         return len(wd.find_elements(By.NAME, "selected[]"))
+
+
+    # Новый метод для получения списка групп из тестируемого приложения (урок 4-7)
+    def get_group_list(self):
+        wd = self.app.wd
+        self.open_groups_page()
+
+        # Объявляем список для хранения полученного списка
+        groups = []
+
+        # С помощью Inspect Element (Q) получаем название групп и  идентификаторы, которые
+        # хранятся в атрибуте value чек-бокса группы
+        # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+        # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+        # в виде css_selector, т. е. $$('span.group'), то мы получим список элементов, которые
+        # по этому селектору находятся
+        for element in wd.find_elements(By.CSS_SELECTOR, "span.group"):
+            # Для получения текста обращаемся к свойству text
+            text = element.text
+
+            # для получения идентификатора внутри элемента span находим элемент с именем selected[]
+            # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
+            id = element.find_element(By.NAME, "selected[]").get_attribute("value")
+
+            # Добавляем полученные элементы в список
+            groups.append(Group(name=text, id=id))
+
+        # ВОзвращаем полученный готовый список
+        return groups

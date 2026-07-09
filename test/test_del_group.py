@@ -13,7 +13,15 @@ def test_delete_first_group(app):
     # Добавляем проверку наличия группы и создание группы, если группы нет (урок 3-5)
     if app.group.count() == 0:
         app.group.create(Group(name="test"))
+
+    # Получаем список групп из тестируемого приложения до удаления группы (урок 4-7)
+    old_groups = app.group.get_group_list()
     app.group.delete_first_group()
+
+    # Добавляем проверку списка после удаления со списком, полученным из тестируемого
+    # приложения (урок 4-7)
+    new_groups = app.group.get_group_list()
+    assert len(old_groups) - 1 == len(new_groups)
 
 
 
