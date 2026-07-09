@@ -103,9 +103,11 @@ class ContactHelper:
         wd.find_element(By.XPATH, "/html/body/div/div[3]/ul/li[1]/a").click()
 
 
+    # Добавлена проверка открытой страницы (урок 3-6)
     def open_contact_list_via_addressbook_link(self):
         wd = self.app.wd
-        wd.find_element(By.ID, "logo").click()
+        if not (wd.current_url.endswith("/addressbook/") and len(wd.find_elements(By.NAME, "delete")) > 0 and len(wd.find_elements(By.NAME, "remove")) == 0):
+            wd.find_element(By.ID, "logo").click()
 
 
     def select_contact_by_lastname(self, lastname):
@@ -197,7 +199,8 @@ class ContactHelper:
 
     def go_to_next_birthdays_page(self):
         wd = self.app.wd
-        wd.find_element(By.LINK_TEXT, "next birthdays").click()
+        if not (wd.current_url.endswith("/birthdays.php")):
+            wd.find_element(By.LINK_TEXT, "next birthdays").click()
 
 
     def go_to_edit_page_from_birthday_list(self, lastname, firstname, middlename):

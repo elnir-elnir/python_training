@@ -2,6 +2,7 @@
 # qa:
 # description:
 #------------------------------------------------------------------------------
+import time
 
 from model.group import Group
 
@@ -20,8 +21,6 @@ def test_full_modify_new_group_initial_without_contacts(app):
         app.contact.select_all_contacts()
         app.contact.delete_contact_from_contact_list()
 
-    app.group.open_groups_page()
-    app.group.select_group_by_name(group_name)
     app.group.full_modify_group_by_name(group_name, new_group_name="modified_test_group", new_group_header="modified_test_header", new_group_footer="modified_test_footer")
 
 
@@ -49,7 +48,6 @@ def test_full_modify_new_group_initial_with_one_contact(app):
     if app.group.count_of_contacts_in_group(group_name) == 0:
         app.data.create_contact_with_custom_group(group_name)
 
-    app.group.open_groups_page()
     app.group.full_modify_group_by_name(group_name, new_group_name="modified_test_group", new_group_header="modified_test_header", new_group_footer="modified_test_footer")
 
 
