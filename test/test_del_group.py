@@ -23,6 +23,13 @@ def test_delete_first_group(app):
     new_groups = app.group.get_group_list()
     assert len(old_groups) - 1 == len(new_groups)
 
+    # Реализуем сравнение списков (урок 4-8)
+    # В старом списке удаляем первый элемент (удаляем все элементы с 0 по 1 [0:1], но
+    # при вырезке левая граница включается, а правая не включается, поэтому удалится
+    # только первый элемент, у которого индекс 0) и сравниваем списки
+    old_groups[0:1] = []
+    assert old_groups == new_groups
+
 
 
 def test_delete_custom_group_when_group_has_no_contacts(app):
