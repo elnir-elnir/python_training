@@ -194,3 +194,10 @@ class GroupHelper:
 
         # ВОзвращаем полученный готовый список
         return groups
+
+
+    def get_group_id_by_name_from_list(self, group_list, group_name):
+        for g in group_list:
+            if g.name == group_name:
+                return g.id
+        return None
