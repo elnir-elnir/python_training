@@ -38,3 +38,22 @@ def test_modify_first_group_header(app):
     # приложения (урок 4-7)
     new_groups = app.group.get_group_list()
     assert len(old_groups) == len(new_groups)
+
+
+
+# Добавляем новый тест, в котором будем сравнивать списки (урок 4-9)
+def test_modify_group_name(app):
+    old_groups = app.group.get_group_list()
+    group = Group(name="New group")
+    # Запоминаем идентификатор созданной группы (урок 4-9)
+    group.id = old_groups[0].id
+    app.group.modify_first_group(group)
+    new_groups = app.group.get_group_list()
+    assert len(old_groups) == len(new_groups)
+
+    # Выполняем замену модифицируемой группы из списка, полученного из приложения, на результат
+    # модификации (на модифицированную группу)
+    old_groups[0] = group
+
+    # Сравниваем группы: группу, полученную из приложения и группу с выполненной заменой
+    assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
