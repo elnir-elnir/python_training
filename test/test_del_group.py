@@ -138,7 +138,6 @@ def test_delete_modified_group_when_group_has_contacts(app):
 def test_delete_several_groups(app):
     group1, group2 = app.data.create_several_custom_groups()
 
-    # Выполнение
     # Получаем из приложения текущий список групп (дз 11)
     old_groups = app.group.get_group_list()
 

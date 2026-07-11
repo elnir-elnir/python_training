@@ -201,3 +201,10 @@ class GroupHelper:
             if g.name == group_name:
                 return g.id
         return None
+
+
+    def find_group_index_by_id(self, group_list, group_id):
+        for i, g in enumerate(group_list):
+            if g.id == group_id:
+                return i
+        return None
