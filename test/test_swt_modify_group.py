@@ -20,8 +20,6 @@ def test_modify_first_group_name(app):
         old_groups = app.group.get_group_list()
         # Запоминаем идентификатор созданной группы (урок 4-9)
         group.id = old_groups[0].id
-        print("start_groups: ", old_groups)
-        print("first_group_id: ", group.id)
 
     # Получаем список групп из тестируемого приложения до модификации группы (урок 4-7)
     old_groups = app.group.get_group_list()
@@ -29,8 +27,7 @@ def test_modify_first_group_name(app):
     group = Group(name="New group")
     # Определяем идентификатор первой группы в полученном из приложения списке (дз 11)
     group.id = old_groups[0].id
-    print("old_groups: ", old_groups)
-    print("first_group_id: ", group.id)
+    print("first_group_id: ",group.id)
 
     # Модифицируем первую группу в приложении - передаем в приложение значения объекта
     # модифицированной группы (дз 11)
@@ -40,16 +37,12 @@ def test_modify_first_group_name(app):
     # приложения (урок 4-7)
     new_groups = app.group.get_group_list()
     assert len(old_groups) == len(new_groups)
-    print("new_groups: ", new_groups)
 
     # Выполняем замену модифицируемой группы из списка, полученного из приложения, на результат
     # модификации (на модифицированную группу) (дз 11)
     old_groups[0] = group
-    print("modified_groups: ", old_groups)
 
     # Сравниваем группы: группу, полученную из приложения и группу с выполненной заменой
-    print ("sorted_modified_groups: ", sorted(old_groups, key=Group.id_or_max))
-    print("sorted_new_groups: ", sorted(new_groups, key=Group.id_or_max))
     assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
 
 

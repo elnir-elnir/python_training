@@ -2,8 +2,6 @@
 # qa:
 # description:
 #------------------------------------------------------------------------------
-import time
-
 
 # Methods app.user.login() and app.session.logout() have been removed from
 # all tests because fixture have been optimized (lesson 3-3)
@@ -171,6 +169,7 @@ def test_delete_contact_included_in_group_via_edit_page(app):
 
 
 
+# Добавлено сравнение списков групп - дз 11
 def test_delete_several_contacts_included_in_one_group_via_checkboxes_and_delete_button(app):
     group = app.data.create_custom_group()
     contact1, contact2 = app.data.create_several_contact_with_custom_group(group.name)
@@ -196,6 +195,7 @@ def test_delete_several_contacts_included_in_one_group_via_checkboxes_and_delete
                                                                                key=lambda contact: contact.id)
 
 
+# Добавлено сравнение списков групп - дз 11
 def test_delete_button_pressed_when_contact_not_selected(app):
     app.contact.open_contact_list_via_home_button()
 

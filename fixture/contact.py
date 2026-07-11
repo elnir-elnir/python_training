@@ -214,6 +214,8 @@ class ContactHelper:
     def go_to_details_page_from_birthday_list(self, lastname, firstname, middlename):
         wd = self.app.wd
         row_xpath = f"//tr[contains(td[2][normalize-space()], '{lastname}') and contains(td[2][normalize-space()], '{middlename}') and td[3][normalize-space()]='{firstname}']//a[img/@title='Details']"
+        if middlename is None:
+            row_xpath = f"//tr[contains(td[2][normalize-space()], '{lastname}') and td[3][normalize-space()]='{firstname}']//a[img/@title='Details']"
         details_link = wd.find_element(By.XPATH, row_xpath)
         details_link.click()
 

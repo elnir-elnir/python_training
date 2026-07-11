@@ -70,7 +70,7 @@ class DataFactory:
                           nickname="test_nickname", title="test_title", company="test_company", address="test_address",
                           home_phone="123-456", mobile_phone="+71234567890", work_phone="789-900",
                           email="test@yandex.ru", email2="test@mail.ru", email3="test@gmail.com",
-                          homepage="https:\\test.ru", bday="1", bmonth="January", byear="2000", aday="2",
+                          homepage="https:\\\\test.ru", bday="1", bmonth="January", byear="2000", aday="2",
                           amonth="February", ayear="2020", new_group="[none]")
         self.app.contact.create(contact)
         return contact
@@ -171,7 +171,7 @@ class DataFactory:
 
 
     def set_modified_contact(self):
-        modified_contact = Contact(firstname="modified_test_firstname", middlename="modified_test_lastname", lastname="modified_test_middlename",
+        modified_contact = Contact(firstname="modified_test_firstname", middlename="modified_test_middlename", lastname="modified_test_lastname",
                                    nickname="modified_test_nickname", title="modified_test_title", company="modified_test_company",
                                    address="modified_test_address", home_phone="999-999",
                                    mobile_phone="+79999999999",
