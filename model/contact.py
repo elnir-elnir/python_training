@@ -7,8 +7,9 @@ from sys import maxsize
 
 class Contact:
     # Добавляем в параметры идентификатор (дз 11)
-    def __init__(self, firstname, middlename, lastname, nickname, title, company, address, home_phone, mobile_phone,
-                 work_phone, email, email2, email3, homepage, bday, bmonth, byear, aday, amonth, ayear, new_group, id=None):
+    # И модифицируем конструктор - None is special value/ None means that field not initialized (lesson 3-2)
+    def __init__(self, firstname=None, middlename=None, lastname=None, nickname=None, title=None, company=None, address=None, home_phone=None, mobile_phone=None,
+                 work_phone=None, email=None, email2=None, email3=None, homepage=None, bday=None, bmonth=None, byear=None, aday=None, amonth=None, ayear=None, new_group=None, id=None):
         self.firstname = firstname
         self.middlename = middlename
         self.lastname = lastname
