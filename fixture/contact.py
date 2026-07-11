@@ -6,6 +6,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
+from model.contact import Contact
 
 
 class ContactHelper:
@@ -300,4 +301,44 @@ class ContactHelper:
         wd.find_element(By.NAME, "byear").clear()
         wd.find_element(By.NAME, "byear").send_keys(byear)
         wd.find_element(By.NAME, "update").click()
+
+
+    # Новый метод для получения списка контактов из тестируемого приложения (дз 11)
+    def get_contact_list(self):
+        wd = self.app.wd
+        self.open_contact_list_via_addressbook_link()
+
+        # Объявляем список для хранения полученного списка
+        contacts = []
+
+        # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
+        # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
+        # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+        # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+        # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
+        # по этому селектору находятся
+        for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
+            # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
+            # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
+            id = row.find_element(By.NAME, "selected[]").get_attribute("value")
+
+            # Получаем фамилию (2-й столбец)
+            lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
+
+            # Получаем имя (3-й столбец)
+            firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
+
+            # Добавляем полученные элементы в список
+            contacts.append(Contact(id=id, firstname=firstname, lastname=lastname))
+
+        # Возвращаем полученный готовый список
+        return contacts
+
+
+    # Добавлен метод определения идентификатора контакта из списка контактов по фамилии и имени (дз 11)
+    def get_contact_id_by_lastname_from_list(self, contact_list, lastname, firstname):
+        for c in contact_list:
+            if c.lastname == lastname and c.firstname == firstname:
+                return c.id
+        return None
 
