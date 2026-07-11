@@ -320,7 +320,7 @@ class ContactHelper:
         for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
             # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
             # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
-            id = row.find_element(By.NAME, "selected[]").get_attribute("value")
+            cntct_id = row.find_element(By.NAME, "selected[]").get_attribute("value")
 
             # Получаем фамилию (2-й столбец)
             lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
@@ -329,7 +329,40 @@ class ContactHelper:
             firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
 
             # Добавляем полученные элементы в список
-            contacts.append(Contact(id=id, firstname=firstname, lastname=lastname))
+            contacts.append(Contact(id=cntct_id, firstname=firstname, lastname=lastname))
+
+        # Возвращаем полученный готовый список
+        return contacts
+
+
+    # Новый метод для получения списка контактов в группе из тестируемого приложения (дз 11)
+    def get_contact_list_in_group(self, group_name):
+        wd = self.app.wd
+        self.open_contact_list_via_home_button()
+        self.filter_contacts_by_group(group_name)
+
+        # Объявляем список для хранения полученного списка
+        contacts = []
+
+        # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
+        # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
+        # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+        # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+        # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
+        # по этому селектору находятся
+        for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
+            # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
+            # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
+            cntct_id = row.find_element(By.NAME, "selected[]").get_attribute("value")
+
+            # Получаем фамилию (2-й столбец)
+            lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
+
+            # Получаем имя (3-й столбец)
+            firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
+
+            # Добавляем полученные элементы в список
+            contacts.append(Contact(id=cntct_id, firstname=firstname, lastname=lastname))
 
         # Возвращаем полученный готовый список
         return contacts
