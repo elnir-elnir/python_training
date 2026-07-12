@@ -2,7 +2,7 @@
 # qa:
 # description:
 #------------------------------------------------------------------------------
-import time
+from random import randrange
 
 from model.group import Group
 
@@ -11,7 +11,49 @@ from model.group import Group
 # Methods app.user.login() and app.session.logout() have been removed from
 # all tests because fixture have been optimized (lesson 3-3)
 
-def test_full_modify_new_group_initial_without_contacts(app):
+# Добавлен новый тест - модификация группы по индексу, определенному случайным образом (дз 13)
+def test_full_modify_some_group_initial_without_contacts(app):
+    # Добавляем проверку наличия группы и создание группы, если группы нет (урок 3-5)
+    group_name = "test"
+    if app.group.count() == 0:
+        # Объяление перемнной выполнено в рамках дз 11
+        group = Group(name=group_name)
+        app.group.create(group)
+    # Получаем список групп из тестируемого приложения до модификации группы (урок 4-7)
+    old_groups = app.group.get_group_list()
+    # Определяем индекс модифициуемой группы случайным образом (дз 13)
+    index = randrange(len(old_groups))
+    # Определяем имя группы по индексу (дз 13)
+    group_name = old_groups[index].name
+
+    # Проверяем контакты в выбранной группе (дз 13)
+    if app.group.count_of_contacts_in_group(group_name) > 0:
+        app.contact.select_all_contacts()
+        app.contact.delete_contact_from_contact_list()
+
+    # Создаем объект модифицированной группы (дз 11)
+    group = Group(name="modified_test_group", header="modified_test_header", footer="modified_test_footer")
+    # Определяем идентификатор группы с индексом index в полученном из приложения списке (дз 13)
+    group.id = old_groups[index].id
+
+    # Выполняем модификацию группы по индексу (дз 13)
+    app.group.full_modify_group_by_index(index, group.name, group.header, group.footer)
+
+    # Добавляем проверку списка после модификации со списком, полученным из тестируемого
+    # приложения (урок 4-7)
+    new_groups = app.group.get_group_list()
+    assert len(old_groups) == len(new_groups)
+
+    # Выполняем замену модифицируемой группы из списка, полученного из приложения, на результат
+    # модификации (на модифицированную группу) (дз 13)
+    old_groups[index] = group
+
+    # Сравниваем группы: группу, полученную из приложения и группу с выполненной заменой (дз 11)
+    assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
+
+
+
+def test_full_modify_group_initial_without_contacts_by_name(app):
     # Добавляем проверку наличия группы и создание группы, если группы нет (урок 3-5)
     group_name = "test"
     if app.group.count_group_by_name(group_name) == 0:

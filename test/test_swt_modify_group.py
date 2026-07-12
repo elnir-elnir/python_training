@@ -9,6 +9,7 @@ from model.group import Group
 
 
 # Добавляем новый тест - модификация группы по индексу, выбранному случайным образом (урок 4-11)
+# Сравнение списков реализовано в рамках урока 4-9
 def test_modify_some_group_name(app):
     # Добавляем проверку наличия группы и создание группы, если группы нет (урок 3-5)
     if app.group.count() == 0:
@@ -17,7 +18,7 @@ def test_modify_some_group_name(app):
 
     # Получаем список групп из тестируемого приложения до модификации группы (урок 4-7)
     old_groups = app.group.get_group_list()
-    # Случаным образом определяем индекс удаляемой группы (урок 4-11)
+    # Случаным образом определяем индекс модифицируемой группы (урок 4-11)
     index = randrange(len(old_groups))
 
     # Создаем объект модифицированной группы (дз 11)
@@ -99,22 +100,3 @@ def test_modify_first_group_header(app):
     # приложения (урок 4-7)
     new_groups = app.group.get_group_list()
     assert len(old_groups) == len(new_groups)
-
-
-
-# Добавляем новый тест, в котором будем сравнивать списки (урок 4-9)
-def test_modify_group_name(app):
-    old_groups = app.group.get_group_list()
-    group = Group(name="New group")
-    # Запоминаем идентификатор созданной группы (урок 4-9)
-    group.id = old_groups[0].id
-    app.group.modify_first_group(group)
-    new_groups = app.group.get_group_list()
-    assert len(old_groups) == len(new_groups)
-
-    # Выполняем замену модифицируемой группы из списка, полученного из приложения, на результат
-    # модификации (на модифицированную группу)
-    old_groups[0] = group
-
-    # Сравниваем группы: группу, полученную из приложения и группу с выполненной заменой
-    assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)

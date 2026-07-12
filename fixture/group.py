@@ -142,6 +142,26 @@ class GroupHelper:
         self.group_cache = None
 
 
+    # Добавлен метод модификации группы по индексу (дз 13)
+    def full_modify_group_by_index(self, index, new_group_name, new_group_header, new_group_footer):
+        wd = self.app.wd
+        self.open_groups_page()
+        self.select_group_by_index(index)
+        wd.find_element(By.NAME, "edit").click()
+        wd.find_element(By.NAME, "group_name").click()
+        wd.find_element(By.NAME, "group_name").clear()
+        wd.find_element(By.NAME, "group_name").send_keys(new_group_name)
+        wd.find_element(By.NAME, "group_header").click()
+        wd.find_element(By.NAME, "group_header").clear()
+        wd.find_element(By.NAME, "group_header").send_keys(new_group_header)
+        wd.find_element(By.NAME, "group_footer").click()
+        wd.find_element(By.NAME, "group_footer").clear()
+        wd.find_element(By.NAME, "group_footer").send_keys(new_group_footer)
+        wd.find_element(By.NAME, "update").click()
+        # Выполняем сброс кеша в связи с модификацией группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
+
+
     def open_and_confirm_group_modify_without_changes_by_name(self, group_name):
         wd = self.app.wd
         self.open_groups_page()
