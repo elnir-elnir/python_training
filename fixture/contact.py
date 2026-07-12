@@ -179,6 +179,14 @@ class ContactHelper:
         details_link.click()
 
 
+    # Добавлен метод перехода на страницу редактирования контакта по идентификатору (в рамках дз 13)
+    def go_to_details_page_by_contact_id(self, contact_id):
+        wd = self.app.wd
+        row_xpath = f"//a[contains(@href, 'view.php?id={contact_id}') and img/@title='Details']"
+        details_link = wd.find_element(By.XPATH, row_xpath)
+        details_link.click()
+
+
     def go_to_details_page_of_first_contact_from_contact_list(self):
         wd = self.app.wd
         row_xpath = f"(//tr[@name='entry' and not(contains(@style, 'display: none'))]//a[img/@title='Details'])[1]"
@@ -199,7 +207,6 @@ class ContactHelper:
 
 
     # Добавлен метод перехода на страницу редактирования контакта по идентификатору (в рамках дз 13)
-#    def go_to_edit_page_from_contact_list_by_contact_id(self, contact_id):
     def go_to_edit_page_by_contact_id(self, contact_id):
         wd = self.app.wd
         row_xpath = f"//a[contains(@href, 'edit.php?id={contact_id}') and img/@title='Edit']"

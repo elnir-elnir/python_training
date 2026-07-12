@@ -2,7 +2,7 @@
 # qa:
 # description:
 #------------------------------------------------------------------------------
-import time
+from random import randrange
 
 from model.contact import Contact
 from model.group import Group
@@ -11,7 +11,8 @@ from model.group import Group
 # Methods app.user.login() and app.session.logout() have been removed from
 # all tests because fixture have been optimized (lesson 3-3)
 
-def test_modify_contact_when_contact_not_in_group_via_details_from_home_page(app):
+# Добавлен тест модификации контакта с индексом, определенным случайным образом (дз 13)
+def test_modify_some_contact_when_contact_not_in_group_via_details_from_home_page(app):
     # Добавляем проверку наличия контакта, не включенного в группу, и создание контакта, если
     # его нет (урок 3-5)
     # Предусловия
@@ -26,31 +27,26 @@ def test_modify_contact_when_contact_not_in_group_via_details_from_home_page(app
         contact = app.data.create_contact_with_default_group()
         print("start_contact: ", contact)
 
-        # Получаем список контактов из приложения до модификации контакта (дз 11)
-        old_contacts = app.contact.get_contact_list_in_group("[none]")
-        # Запоминаем идентификатор первого в списке контакта (дз 11)
-        contact.id = old_contacts[0].id
-
-        print("start_contacts: ", old_contacts)
-        print("start_first_contact_id: ", contact.id)
-
-        app.contact.go_to_details_page_from_contact_list(contact.lastname)
-
-    # Получаем список контактов из приложения до удаления контакта (дз 11)
+    # Получаем список контактов из приложения до модификации контакта (дз 11)
     old_contacts = app.contact.get_contact_list_in_group("[none]")
 
-    # переходим на страницу редактирования первого контакта без группы
-    app.contact.go_to_details_page_of_first_contact_from_contact_list()
+    # Определен случайным образом индекс модифицируемого контакта (дз 13)
+    index = randrange(len(old_contacts))
+    print("index: ", index)
 
     # Создаем объект модифицированного контакта (дз 11)
     contact = app.data.set_modified_contact()
     print("contact: ", contact)
     print("old_contacts: ", old_contacts)
-    print("first_contact_id: ", contact.id)
+    print("contact_id: ", contact.id)
 
-    # Запоминаем идентификатор первого в списке контакта (дз 11)
-    contact.id = old_contacts[0].id
-    print("first_contact_id_new: ", contact.id)
+    # Запоминаем идентификатор контакта c полученным индексом (дз 13)
+    contact_id = old_contacts[index].id
+    contact.id = contact_id
+    print("contact_id_new: ", contact.id)
+
+    # переходим на страницу редактирования контакта без группы с заданным индексом (в рамках дз 13)
+    app.contact.go_to_details_page_by_contact_id(contact_id)
 
     # Тест
     # Модифицируем первый в списке контакт через страницу контакта (модифицировано в рамках дз 11)
@@ -65,8 +61,8 @@ def test_modify_contact_when_contact_not_in_group_via_details_from_home_page(app
     print("new_contacts: ", new_contacts)
 
     # Выполняем замену модифицируемого контакта из списка, полученного из приложения, на результат
-    # модификации (на модифицированный контакт) (дз 11)
-    old_contacts[0] = contact
+    # модификации (на модифицированный контакт) (дз 11, 13)
+    old_contacts[index] = contact
     print("modified_contacts: ", old_contacts)
 
     # Сравниваем контакты: контакт, полученный из приложения и контакт с выполненной заменой
@@ -76,7 +72,55 @@ def test_modify_contact_when_contact_not_in_group_via_details_from_home_page(app
 
 
 
-def test_modify_contact_when_contact_not_in_group_via_edit_from_home_page(app):
+# Тест переименован и модифицирован в рамках дз 13
+def test_modify_first_contact_when_contact_not_in_group_via_details_from_home_page(app):
+    # Добавляем проверку наличия контакта, не включенного в группу, и создание контакта, если
+    # его нет (урок 3-5)
+    # Предусловия
+    # Переходим на страницу со списком контактов
+    app.contact.open_contact_list_via_home_button()
+
+    # Фильтруем контакты без группы
+    app.contact.filter_contacts_by_group("[none]")
+
+    # Если нет контактов без группы — создаём контакт
+    if app.contact.count_of_contacts() == 0:
+        app.data.create_contact_with_default_group()
+
+    # Получаем список контактов из приложения до удаления контакта (дз 11)
+    old_contacts = app.contact.get_contact_list_in_group("[none]")
+
+    # переходим на страницу редактирования первого контакта без группы
+    app.contact.go_to_details_page_of_first_contact_from_contact_list()
+
+    # Создаем объект модифицированного контакта (дз 11)
+    contact = app.data.set_modified_contact()
+
+    # Запоминаем идентификатор первого в списке контакта (дз 11)
+    contact.id = old_contacts[0].id
+
+    # Тест
+    # Модифицируем первый в списке контакт через страницу контакта (модифицировано в рамках дз 11)
+    app.contact.go_to_edit_page_from_details_page()
+    app.contact.edit_contact(contact)
+    app.contact.return_to_home_page_after_contact_edit()
+
+    # Добавляем проверку списка после модификации со списком, полученным из тестируемого
+    # приложения (дз 11)
+    new_contacts = app.contact.get_contact_list_in_group("[none]")
+    assert len(old_contacts) == len(new_contacts)
+
+    # Выполняем замену модифицируемого контакта из списка, полученного из приложения, на результат
+    # модификации (на модифицированный контакт) (дз 11)
+    old_contacts[0] = contact
+
+    # Сравниваем контакты: контакт, полученный из приложения и контакт с выполненной заменой
+    assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
+
+
+
+# Добавлен тест модификации контакта с индексом, определенным случайным образом (дз 13)
+def test_modify_some_contact_when_contact_not_in_group_via_edit_from_home_page(app):
     # Добавляем проверку наличия контакта, не включенного в группу, и создание контакта, если его нет (урок 3-5)
     # Предусловия
     # Переходим на страницу со списком контактов
@@ -87,14 +131,54 @@ def test_modify_contact_when_contact_not_in_group_via_edit_from_home_page(app):
 
     # Если нет контактов без группы — создаём контакт
     if app.contact.count_of_contacts() == 0:
-        contact = app.data.create_contact_with_default_group()
+        app.data.create_contact_with_default_group()
 
-        # Получаем список контактов из приложения до удаления контакта (дз 11)
-        old_contacts = app.contact.get_contact_list_in_group("[none]")
-        # Запоминаем идентификатор первого в списке контакта (дз 11)
-        contact.id = old_contacts[0].id
+    # Получаем список контактов из приложения до модификации контакта (дз 11)
+    old_contacts = app.contact.get_contact_list_in_group("[none]")
 
-        app.contact.go_to_edit_page_from_contact_list(contact.lastname)
+    # Определен случайным образом индекс модифицируемого контакта (дз 13)
+    index = randrange(len(old_contacts))
+
+    # Создаем объект модифицированного контакта (дз 11)
+    contact = app.data.set_modified_contact()
+
+    # Запоминаем идентификатор контакта с полученным индексом (дз 11, 13)
+    contact_id = old_contacts[index].id
+    contact.id = contact_id
+    app.contact.go_to_edit_page_by_contact_id(contact_id)
+
+    # Тест
+    # Модифицируем контакт через страницу контакта (модифицировано в рамках дз 11)
+    app.contact.edit_contact(contact)
+    app.contact.return_to_home_page_after_contact_edit()
+
+    # Добавляем проверку списка после модификации со списком, полученным из тестируемого
+    # приложения (дз 11)
+    new_contacts = app.contact.get_contact_list_in_group("[none]")
+    assert len(old_contacts) == len(new_contacts)
+
+    # Выполняем замену модифицируемого контакта из списка, полученного из приложения, на результат
+    # модификации (на модифицированный контакт) (дз 11, 13)
+    old_contacts[index] = contact
+
+    # Сравниваем контакты: контакт, полученный из приложения и контакт с выполненной заменой
+    assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
+
+
+
+# Тест переименован и модифицирован в рамках дз 13
+def test_modify_first_contact_when_contact_not_in_group_via_edit_from_home_page(app):
+    # Добавляем проверку наличия контакта, не включенного в группу, и создание контакта, если его нет (урок 3-5)
+    # Предусловия
+    # Переходим на страницу со списком контактов
+    app.contact.open_contact_list_via_home_button()
+
+    # Фильтруем контакты без группы
+    app.contact.filter_contacts_by_group("[none]")
+
+    # Если нет контактов без группы — создаём контакт
+    if app.contact.count_of_contacts() == 0:
+        app.data.create_contact_with_default_group()
 
     # Получаем список контактов из приложения до модификации контакта (дз 11)
     old_contacts = app.contact.get_contact_list_in_group("[none]")
@@ -125,7 +209,8 @@ def test_modify_contact_when_contact_not_in_group_via_edit_from_home_page(app):
 
 
 
-def test_modify_contact_when_contact_not_in_group_via_details_from_birthday_page(app):
+# Тест переименован в рамках дз 13
+def test_modify_first_contact_when_contact_not_in_group_via_details_from_birthday_page(app):
     # Добавляем проверку наличия контакта, не включенного в группу, и создание контакта, если его нет (урок 3-5)
     # Предусловия
     # Переходим на страницу со списком контактов
@@ -177,6 +262,61 @@ def test_modify_contact_when_contact_not_in_group_via_details_from_birthday_page
     # Выполняем замену модифицируемого контакта из списка, полученного из приложения, на результат
     # модификации (на модифицированный контакт) (дз 11)
     old_contacts[0] = contact
+
+    # Сравниваем контакты: контакт, полученный из приложения и контакт с выполненной заменой
+    assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
+
+
+
+# Добавлен тест модификации контакта по индексу, определенному случайным образом (дз 13)
+def test_modify_some_contact_when_contact_not_in_group_via_details_from_birthday_page(app):
+    # Добавляем проверку наличия контакта, не включенного в группу, и создание контакта, если его нет (урок 3-5)
+    # Предусловия
+    # Переходим на страницу со списком контактов
+    app.contact.open_contact_list_via_home_button()
+
+    # Фильтруем контакты без группы
+    app.contact.filter_contacts_by_group("[none]")
+
+    # Если нет контактов без группы — создаём контакт
+    if app.contact.count_of_contacts() == 0:
+        app.data.create_contact_with_default_group()
+
+    # Получаем список контактов из приложения до модификации контакта (дз 11)
+    old_contacts = app.contact.get_contact_list_in_group("[none]")
+    index = randrange(len(old_contacts))
+    # Запоминаем идентификатор контакта с полученным индексом (дз 11, 13)
+    contact_id = old_contacts[index].id
+
+    app.contact.go_to_edit_page_by_contact_id(contact_id)
+
+    # Устанавливаем дату рождения, если её нет
+    if app.contact.get_bday() == "0" or app.contact.get_bmonth() == "-":
+        app.contact.set_birthday(bday="3", bmonth="May", byear="1999")
+
+    app.contact.go_to_next_birthdays_page()
+    app.contact.go_to_details_page_by_contact_id(contact_id)
+
+    # Создаем объект модифицированного контакта (дз 11)
+    contact = app.data.set_modified_contact()
+
+    # Запоминаем идентификатор контакта с полученным индексом (дз 11)
+    contact.id = contact_id
+
+    # Тест
+    # Модифицируем контакт через страницу контакта (модифицировано в рамках дз 11)
+    app.contact.go_to_edit_page_from_details_page()
+    app.contact.edit_contact(contact)
+    app.contact.return_to_home_page_after_contact_edit()
+
+    # Добавляем проверку списка после модификации со списком, полученным из тестируемого
+    # приложения (дз 11)
+    new_contacts = app.contact.get_contact_list_in_group("[none]")
+    assert len(old_contacts) == len(new_contacts)
+
+    # Выполняем замену модифицируемого контакта из списка, полученного из приложения, на результат
+    # модификации (на модифицированный контакт) (дз 11, 13)
+    old_contacts[index] = contact
 
     # Сравниваем контакты: контакт, полученный из приложения и контакт с выполненной заменой
     assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
