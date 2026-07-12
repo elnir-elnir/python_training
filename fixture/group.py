@@ -44,6 +44,8 @@ class GroupHelper:
         wd.find_element(By.NAME, "submit").click()
         # return to groups page replaced from tests to create_group method
         self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с добавлением группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
 
 
     # add new method (swt, lesson 3-2)
@@ -70,6 +72,8 @@ class GroupHelper:
         # submit deletion
         wd.find_element(By.NAME, "delete").click()
         self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с удалением группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
 
 
     # add new method (swt, lesson 3-2)
@@ -84,12 +88,16 @@ class GroupHelper:
         self.select_group_by_name(group_name)
         wd.find_element(By.NAME, "delete").click()
         self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с удалением группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
 
 
     def delete_group(self):
         wd = self.app.wd
         wd.find_element(By.NAME, "delete").click()
         self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с удалением группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
 
 
     def select_group_by_name(self, group_name):
@@ -114,6 +122,8 @@ class GroupHelper:
         wd.find_element(By.NAME, "group_footer").clear()
         wd.find_element(By.NAME, "group_footer").send_keys(new_group_footer)
         wd.find_element(By.NAME, "update").click()
+        # Выполняем сброс кеша в связи с модификацией группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
 
 
     def open_and_confirm_group_modify_without_changes_by_name(self, group_name):
@@ -136,6 +146,8 @@ class GroupHelper:
         # submit modification
         wd.find_element(By.NAME, "update").click()
         self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с модификацией группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
 
 
     # Добавялем метод подсчета количества чек-боксов на странице groups (определяем количество
@@ -167,33 +179,38 @@ class GroupHelper:
         return len(wd.find_elements(By.NAME, "selected[]"))
 
 
+    # Объявляем глобальную переменную для сохранения кеша
+    group_cache = None
+
     # Новый метод для получения списка групп из тестируемого приложения (урок 4-7)
     def get_group_list(self):
-        wd = self.app.wd
-        self.open_groups_page()
 
-        # Объявляем список для хранения полученного списка
-        groups = []
+        # Проверяем наличие доступного кеша и возвращаем кешированное значение, если оно доступно
+        if self.group_cache is None:
+            wd = self.app.wd
+            self.open_groups_page()
 
-        # С помощью Inspect Element (Q) получаем название групп и  идентификаторы, которые
-        # хранятся в атрибуте value чек-бокса группы
-        # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
-        # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
-        # в виде css_selector, т. е. $$('span.group'), то мы получим список элементов, которые
-        # по этому селектору находятся
-        for element in wd.find_elements(By.CSS_SELECTOR, "span.group"):
-            # Для получения текста обращаемся к свойству text
-            text = element.text
+            # Объявляем список для хранения полученного списка в кеше (урок 4-10)
+            self.group_cache = []
 
-            # для получения идентификатора внутри элемента span находим элемент с именем selected[]
-            # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
-            id = element.find_element(By.NAME, "selected[]").get_attribute("value")
+            # С помощью Inspect Element (Q) получаем название групп и  идентификаторы, которые
+            # хранятся в атрибуте value чек-бокса группы
+            # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+            # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+            # в виде css_selector, т. е. $$('span.group'), то мы получим список элементов, которые
+            # по этому селектору находятся
+            for element in wd.find_elements(By.CSS_SELECTOR, "span.group"):
+                # Для получения текста обращаемся к свойству text
+                text = element.text
 
-            # Добавляем полученные элементы в список
-            groups.append(Group(name=text, id=id))
+                # для получения идентификатора внутри элемента span находим элемент с именем selected[]
+                # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
+                id = element.find_element(By.NAME, "selected[]").get_attribute("value")
 
-        # ВОзвращаем полученный готовый список
-        return groups
+                # Добавляем полученные элементы в список (в уроке 4-10 изменили groups на self.group_cache)
+                self.group_cache.append(Group(name=text, id=id))
+        # Возвращаем копию полученного кеша в виде списка (урок 4-10)
+        return list(self.group_cache)
 
 
     def get_group_id_by_name_from_list(self, group_list, group_name):
