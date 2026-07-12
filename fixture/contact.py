@@ -23,6 +23,9 @@ class ContactHelper:
         Select(wd.find_element(By.NAME, "new_group")).select_by_visible_text(contact.new_group)
         #wd.find_element(By.CSS_SELECTOR, f'select[name=new_group] > option[value="{contact.new_group}"]').click()
         wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
+        # Выполняем сброс кеша в связи с созданием контакта, чтобы считался новый кеш (дз 12)
+        self.contact_cache = None
+        self.contact_in_group_cache = None
 
 
     def fill_contact_form(self, contact):
@@ -139,12 +142,16 @@ class ContactHelper:
         wd.find_element(By.NAME, "to_group").click()
         Select(wd.find_element(By.NAME, "to_group")).select_by_visible_text(group_name)
         wd.find_element(By.NAME, "add").click()
+        # Выполняем сброс кеша после включения контакта в группу, чтобы считался новый кеш (дз 12)
+        self.contact_in_group_cache = None
 
 
     def exclude_contact_from_group(self, group_name):
         wd = self.app.wd
         xpath = f"//input[@type='submit' and @name='remove' and @value='Remove from \"{group_name}\"']"
         wd.find_element(By.XPATH, xpath).click()
+        # Выполняем сброс кеша после исключения контакта из группы, чтобы считался новый кеш (дз 12)
+        self.contact_in_group_cache = None
 
 
     def filter_contacts_by_group(self, group_name):
@@ -246,16 +253,25 @@ class ContactHelper:
         wd = self.app.wd
         self.fill_contact_form(contact)
         wd.find_element(By.NAME, "update").click()
+        # Выполняем сброс кеша в связи с модификацией контакта, чтобы считался новый кеш (дз 12)
+        self.contact_cache = None
+        self.contact_in_group_cache = None
 
 
     def delete_contact_from_edit_page(self):
         wd = self.app.wd
         wd.find_element(By.NAME, "delete").click()
+        # Выполняем сброс кеша в связи с удалением контакта, чтобы считался новый кеш (дз 12)
+        self.contact_cache = None
+        self.contact_in_group_cache = None
 
 
     def delete_contact_from_contact_list(self):
         wd = self.app.wd
         wd.find_element(By.NAME, "delete").click()
+        # Выполняем сброс кеша в связи с удалением контакта, чтобы считался новый кеш (дз 12)
+        self.contact_cache = None
+        self.contact_in_group_cache = None
 
 
     def delete_modal_window_closed(self):
@@ -305,69 +321,83 @@ class ContactHelper:
         wd.find_element(By.NAME, "update").click()
 
 
+    # Объявляем глобальную переменную для сохранения кеша (дз 12)
+    contact_cache = None
+
+
     # Новый метод для получения списка контактов из тестируемого приложения (дз 11)
+    # В метод добавлено получение кеша (дз 12)
     def get_contact_list(self):
-        wd = self.app.wd
-        self.open_contact_list_via_addressbook_link()
+        # Проверяем наличие доступного кеша и возвращаем кешированное значение, если оно доступно
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.open_contact_list_via_addressbook_link()
 
-        # Объявляем список для хранения полученного списка
-        contacts = []
+            # Объявляем список для хранения полученного списка в кеше (дз 12)
+            self.contact_cache = []
 
-        # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
-        # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
-        # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
-        # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
-        # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
-        # по этому селектору находятся
-        for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
-            # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
-            # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
-            cntct_id = row.find_element(By.NAME, "selected[]").get_attribute("value")
+            # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
+            # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
+            # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+            # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+            # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
+            # по этому селектору находятся
+            for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
+                # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
+                # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
+                cntct_id = row.find_element(By.NAME, "selected[]").get_attribute("value")
 
-            # Получаем фамилию (2-й столбец)
-            lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
+                # Получаем фамилию (2-й столбец)
+                lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
 
-            # Получаем имя (3-й столбец)
-            firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
+                # Получаем имя (3-й столбец)
+                firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
 
-            # Добавляем полученные элементы в список
-            contacts.append(Contact(id=cntct_id, firstname=firstname, lastname=lastname))
+                # Добавляем полученные элементы в список (в дз 12 изменили groups на self.contact_cache)
+                self.contact_cache.append(Contact(id=cntct_id, firstname=firstname, lastname=lastname))
 
-        # Возвращаем полученный готовый список
-        return contacts
+        # Возвращаем копию полученного кеша в виде списка (дз 12)
+        return list(self.contact_cache)
+
+
+    # Объявляем глобальную переменную для сохранения кеша контактов в конкретной группе (дз 12)
+    contact_in_group_cache = None
 
 
     # Новый метод для получения списка контактов в группе из тестируемого приложения (дз 11)
+    # В метод добавлено получение кеша (дз 12)
     def get_contact_list_in_group(self, group_name):
-        wd = self.app.wd
-        self.open_contact_list_via_home_button()
-        self.filter_contacts_by_group(group_name)
+        # Проверяем наличие доступного кеша и возвращаем кешированное значение, если оно доступно
+        if self.contact_in_group_cache is None:
+            wd = self.app.wd
+            self.open_contact_list_via_home_button()
+            self.filter_contacts_by_group(group_name)
 
-        # Объявляем список для хранения полученного списка
-        contacts = []
+            # Объявляем список для хранения полученного списка в кеше (дз 12)
+            self.contact_in_group_cache = []
 
-        # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
-        # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
-        # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
-        # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
-        # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
-        # по этому селектору находятся
-        for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
-            # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
-            # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
-            cntct_id = row.find_element(By.NAME, "selected[]").get_attribute("value")
+            # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
+            # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
+            # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+            # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+            # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
+            # по этому селектору находятся
+            for row in wd.find_elements(By.CSS_SELECTOR, "tr[name='entry']"):
+                # для получения идентификатора внутри элемента entry находим элемент с именем selected[]
+                # (чек-бокс) и у этого чек-бокса получаем значение атрибута value
+                cntct_id = row.find_element(By.NAME, "selected[]").get_attribute("value")
 
-            # Получаем фамилию (2-й столбец)
-            lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
+                # Получаем фамилию (2-й столбец)
+                lastname = row.find_element(By.CSS_SELECTOR, "td:nth-child(2)").text
 
-            # Получаем имя (3-й столбец)
-            firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
+                # Получаем имя (3-й столбец)
+                firstname = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text
 
-            # Добавляем полученные элементы в список
-            contacts.append(Contact(id=cntct_id, firstname=firstname, lastname=lastname))
+                # Добавляем полученные элементы в список (в дз 12 изменили groups на self.contact_in_group_cache)
+                self.contact_in_group_cache.append(Contact(id=cntct_id, firstname=firstname, lastname=lastname))
 
-        # Возвращаем полученный готовый список
-        return contacts
+        # Возвращаем копию полученного кеша в виде списка (дз 12)
+        return list(self.contact_in_group_cache)
 
 
     # Добавлен метод определения идентификатора контакта из списка контактов по фамилии и имени (дз 11)
