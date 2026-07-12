@@ -132,9 +132,15 @@ class ContactHelper:
 
 
     # add new method (lesson 3-5)
+    # Метод модифицирован в связи с добавлением нового метода - выбор контакта по индексу (дз 13)
     def select_first_contact(self):
+        self.select_contact_by_index(0)
+
+
+    # Добавляем новый метод - выбор контакта по индексу (дз 13)
+    def select_contact_by_index(self, index):
         wd = self.app.wd
-        wd.find_element(By.NAME, "selected[]").click()
+        wd.find_elements(By.NAME, "selected[]")[index].click()
 
 
     def set_group(self, group_name):
@@ -188,6 +194,15 @@ class ContactHelper:
     def go_to_edit_page_from_contact_list(self, lastname):
         wd = self.app.wd
         row_xpath = f"//tr[@name='entry' and td[2][normalize-space()='{lastname}']]//a[img/@title='Edit']"
+        edit_link = wd.find_element(By.XPATH, row_xpath)
+        edit_link.click()
+
+
+    # Добавлен метод перехода на страницу редактирования контакта по идентификатору (в рамках дз 13)
+#    def go_to_edit_page_from_contact_list_by_contact_id(self, contact_id):
+    def go_to_edit_page_by_contact_id(self, contact_id):
+        wd = self.app.wd
+        row_xpath = f"//a[contains(@href, 'edit.php?id={contact_id}') and img/@title='Edit']"
         edit_link = wd.find_element(By.XPATH, row_xpath)
         edit_link.click()
 

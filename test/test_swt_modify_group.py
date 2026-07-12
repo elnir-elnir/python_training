@@ -25,7 +25,6 @@ def test_modify_some_group_name(app):
     group = Group(name="New group")
     # Определяем идентификатор группы с индексом index в полученном из приложения списке (дз 11; урок 4-11)
     group.id = old_groups[index].id
-    print("first_group_id: ",group.id)
 
     # Модифицируем группу с индексом index в приложении - передаем в приложение значения объекта
     # модифицированной группы (дз 11) и индекс группы (урок 4-11)
@@ -66,7 +65,6 @@ def test_modify_first_group_name(app):
     group = Group(name="New group")
     # Определяем идентификатор первой группы в полученном из приложения списке (дз 11)
     group.id = old_groups[0].id
-    print("first_group_id: ",group.id)
 
     # Модифицируем первую группу в приложении - передаем в приложение значения объекта
     # модифицированной группы (дз 11)

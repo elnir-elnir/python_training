@@ -138,18 +138,14 @@ def test_delete_modified_group_when_group_has_no_contacts(app):
     # Получаем список групп из приложения и получаем из списка идентификатор группы (id) по ее
     # названию (дз 11)
     old_groups = app.group.get_group_list()
-    print("old:", old_groups)
     group_id = app.group.get_group_id_by_name_from_list(old_groups, modified_group.name)
-    print("modified_group: name = " + modified_group.name + " id: " + group_id)
 
     # Удаляем группу в приложении и получаем новый список из приложения (дз 11)
     app.group.delete_group_by_name(modified_group.name)
     new_groups = app.group.get_group_list()
-    print("new:", new_groups)
 
     # Получаем ожидаемый список (старый список - удаленная группа)  (дз 11)
     expected_groups = [g for g in old_groups if g.id != group_id]
-    print("expected_groups:", expected_groups)
 
     # Сравниваем
     assert len(old_groups) - 1 == len(new_groups)
