@@ -2,6 +2,8 @@
 # qa:
 # description:
 #------------------------------------------------------------------------------
+from random import randrange
+
 from model.group import Group
 
 
@@ -30,6 +32,37 @@ def test_delete_first_group(app):
     # только первый элемент, у которого индекс 0) и сравниваем списки
     old_groups[0:1] = []
     #assert old_groups == new_groups
+    # Для сравнения списков отсортировали их в порядке возрастания идентификатора (id) (дз 11)
+    assert sorted(old_groups, key=lambda group: group.id) == sorted(new_groups, key=lambda group: group.id)
+
+
+
+# Добавялем новый тест - удаление группы по индексу, определяемому случайным образом (урок 4-11)
+def test_delete_some_group(app):
+    # Добавляем проверку наличия группы и создание группы, если группы нет (урок 3-5)
+    if app.group.count() == 0:
+        tmp_group = Group(name="test")
+        app.group.create(tmp_group)
+
+    # Получаем список групп из тестируемого приложения до удаления группы (урок 4-7)
+    old_groups = app.group.get_group_list()
+    # Случаным образом определяем индекс удаляемой группы (урок 4-11)
+    index = randrange(len(old_groups))
+    # Удаление выполняем новым методом (урок 4-11)
+    app.group.delete_group_by_index(index)
+
+    # Добавляем проверку списка после удаления со списком, полученным из тестируемого
+    # приложения (урок 4-7)
+    new_groups = app.group.get_group_list()
+    assert len(old_groups) - 1 == len(new_groups)
+
+    # Реализуем сравнение списков (урок 4-8)
+    # В старом списке удаляем элемент c индексом, определенным случайным образом (урок 4-11) (вырезка
+    # только элемента с этим индексом, т. е. с index по index+1 [index:index+1] - при вырезке левая граница
+    # включается, а правая не включается, поэтому удалится только элемент, у которого индекс index)
+    # и сравниваем списки
+    old_groups[index:index+1] = []
+    # assert old_groups == new_groups
     # Для сравнения списков отсортировали их в порядке возрастания идентификатора (id) (дз 11)
     assert sorted(old_groups, key=lambda group: group.id) == sorted(new_groups, key=lambda group: group.id)
 

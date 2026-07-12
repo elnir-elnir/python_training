@@ -65,10 +65,18 @@ class GroupHelper:
             wd.find_element(By.NAME, field_name).send_keys(text)
 
 
+    # Модифицируем метод удаления первой группы в связи с появлением нового метода удаления группы
+    # по индексу (урок 4-11)
     def delete_first_group(self):
+        self.delete_group_by_index(0)
+
+
+    # Добавляем новый метод удаления группы - по случайно определенному индексу (урок 4-11)
+    def delete_group_by_index(self, index):
         wd = self.app.wd
         self.open_groups_page()
-        self.select_first_group()
+        # Меняем метод выбора группы с select_first_group на select_group_by_index (урок 4-11)
+        self.select_group_by_index(index)
         # submit deletion
         wd.find_element(By.NAME, "delete").click()
         self.return_to_groups_page()
@@ -77,9 +85,17 @@ class GroupHelper:
 
 
     # add new method (swt, lesson 3-2)
+    # Метод модифицирован в связи с добавлением нового метода - выбор группы по индексу (урок 4-11)
     def select_first_group(self):
+        self.select_group_by_index(0)
+
+
+    # Добавляем новый метод - выбор группы по индексу (урок 4-11)
+    def select_group_by_index(self, index):
         wd = self.app.wd
-        wd.find_element(By.NAME, "selected[]").click()
+        # Изменилась функция выбора группы в списке (урок 4-11)
+        #wd.find_element(By.NAME, "selected[]").click()
+        wd.find_elements(By.NAME, "selected[]")[index].click()
 
 
     def delete_group_by_name(self, group_name):
