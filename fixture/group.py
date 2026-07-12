@@ -151,10 +151,16 @@ class GroupHelper:
 
 
     # add new method (swt, lesson 3-2)
+    # Метод изменен в связи с добавлением метода модификации группы по индексу (урок 4-11)
     def modify_first_group(self, new_group_data):
+        self.modify_group_by_index(0, new_group_data)
+
+
+    # Добавлен метод модификации группы по индексу (урок 4-11)
+    def modify_group_by_index(self, index, new_group_data):
         wd = self.app.wd
         self.open_groups_page()
-        self.select_first_group()
+        self.select_group_by_index(index)
         # open modification form
         wd.find_element(By.NAME, "edit").click()
         # fill group form
