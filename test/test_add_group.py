@@ -1,9 +1,19 @@
 #------------------------------------------------------------------------------
-# developer:
+# qa:
 # description:
 #------------------------------------------------------------------------------
+import pytest
 
 from model.group import Group
+
+
+
+# Добавляем тестовые данные, определенные вне тестов, для параметризации тестов
+# чтобы тестовые данные передавались в тестовую функцию в качестве параметра (урок 5-7)
+testdata = [
+    Group(name="scasc", header="fdbvd", footer="dsvb"),
+    Group(name="", header="", footer="")
+]
 
 
 
@@ -13,13 +23,19 @@ from model.group import Group
 # Переписываем тесты в соответствии с уроком 4-7 - Загружаем информацию
 # из тестируемого приложения в виде списков
 
-def test_add_group(app):
+# Добавлена парметризация теста (урок 5-7)
+# Здесь testdata - исчтоник тестовых данных, group - параметр для передачи тестовых данных в тестовую функцию,
+# ids - параметр для формирования списка с текстовым представлением тестовых данных для формирования отчета
+# о выполнении теста (чтобы в отчете было видно, с какими именно тестовыми данными выполнялся тест)
+@pytest.mark.parametrize("group", testdata, ids=[repr(x) for x in testdata])
+def test_add_group(app, group):
     # Получаем старый список групп из приложения
     old_groups = app.group.get_group_list()
 
     # Для последующего сравнения списков модифицируем тест - объявляем локальную
     # переменную group и передаем ее в качестве параметра в метод создания группы (урок 4-9)
-    group = Group(name="", header="", footer="")
+    # Убираем объявление локальной переменной в связи с параметризацией теста (урок 5-7)
+    # group = Group(name="", header="", footer="")
     app.group.create(group)
 
     # Проверяем, что новый список на единицу длинее старого (урок 4-7)
@@ -48,12 +64,13 @@ def test_add_group(app):
 
 
 
-# Аналогично предыдущему тесту модифицируем и этот тест (урок 4-9)
-def test_add_empty_group(app):
-    old_groups = app.group.get_group_list()
-    group = Group(name="", header="", footer="")
-    app.group.create(group)
-    new_groups = app.group.get_group_list()
-    assert len(old_groups) + 1 == len(new_groups)
-    old_groups.append(group)
-    assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
+# Тест закоментирован в рамках урока 5-7 "Параметризация тестов"
+# # Аналогично предыдущему тесту модифицируем и этот тест (урок 4-9)
+# def test_add_empty_group(app):
+#     old_groups = app.group.get_group_list()
+#     group = Group(name="", header="", footer="")
+#     app.group.create(group)
+#     new_groups = app.group.get_group_list()
+#     assert len(old_groups) + 1 == len(new_groups)
+#     old_groups.append(group)
+#     assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
