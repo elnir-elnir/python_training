@@ -138,7 +138,7 @@ def test_delete_some_contact_not_in_group_via_birthday_page(app):
 
 
 
-# Тест переименован с test_delete_contact_not_in_group_via_birthday_page и модифицирован (в рамках дз 13)
+# !Тест переименован с test_delete_contact_not_in_group_via_birthday_page и модифицирован (в рамках дз 13)
 def test_delete_first_contact_not_in_group_via_birthday_page(app):
     # Предусловия
     # Переходим на страницу со списком контактов

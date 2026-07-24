@@ -452,7 +452,57 @@ class ContactHelper:
                 # Добавляем полученные элементы в список (в дз 12 изменили groups на self.contact_cache)
                 self.contact_cache.append(
                     Contact(firstname=firstname, lastname=lastname, id=id, all_phones_from_home_page=all_phones))
+        # Возвращаем копию полученного кеша в виде списка (дз 12)
+        return list(self.contact_cache)
 
+
+    # Тот же метод, но переписан в рамках дз 14
+    def get_contact_list_full(self):
+        # Проверяем наличие доступного кеша и возвращаем кешированное значение, если оно доступно
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.app.open_home_page()
+
+            # Объявляем список для хранения полученного списка в кеше (дз 12)
+            self.contact_cache = []
+
+            # С помощью Inspect Element (Q) получаем имя, фамилию, которые хранятся в таблице, и
+            # идентификаторы, которые хранятся в атрибуте value чек-бокса контакта
+            # Чтобы убедиться, что в по запросу span.group храняться нужные нам элементы в браузере в
+            # Инструменте разработчика переходим во вкладку Console и вызываем функцию $$ с параметром
+            # в виде css_selector, т. е. $$("tr[name='entry']"), то мы получим список элементов, которые
+            # по этому селектору находятся
+            for row in wd.find_elements(By.NAME, "entry"):
+                cells = row.find_elements(By.TAG_NAME, "td")
+
+                # Получаем имя (3-й столбец)
+                firstname = cells[2].text
+                # Получаем фамилию (2-й столбец)
+                lastname = cells[1].text
+                # Получаем идентификатор
+                id = cells[0].find_element(By.TAG_NAME, "input").get_attribute("value")
+                # Получаем адрес (4-й столбец)
+                address = cells[3].text
+                # Получаем информацию обо всех e-mail сразу, т.к. в приложении они все хранятся в одной
+                # ячейке (дз 14)
+                all_emails = cells[4].text
+
+                # # Получаем информацию обо всех телефонах сразу, т. к. в приложении они все хранятся в
+                # # одной ячейке (урок 5-5)
+                # all_phones = cells[5].text.splitlines()
+                #
+                # # Добавляем полученные элементы в список (в дз 12 изменили groups на self.contact_cache)
+                # self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id, home_phone=all_phones[0], mobile_phone=all_phones[1], work_phone=all_phones[2]))
+
+                # Меняем в рамках урока 5-6, чтобы реализовать метод обратной проверки (склеиваем строки)
+                # Получаем информацию обо всех телефонах сразу, т. к. в приложении они все хранятся в
+                # одной ячейке (урок 5-5)
+                all_phones = cells[5].text
+
+                # Добавляем полученные элементы в список (в дз 12 изменили groups на self.contact_cache)
+                self.contact_cache.append(
+                    Contact(firstname=firstname, lastname=lastname, id=id, address=address, all_emails_from_home_page=all_emails,
+                            all_phones_from_home_page=all_phones))
 
         # Возвращаем копию полученного кеша в виде списка (дз 12)
         return list(self.contact_cache)
@@ -517,6 +567,24 @@ class ContactHelper:
         mobile_phone = wd.find_element(By.NAME, 'mobile').get_attribute('value')
         work_phone = wd.find_element(By.NAME, 'work').get_attribute('value')
         return Contact(firstname=firstname, lastname=lastname, id=id, home_phone=home_phone, mobile_phone=mobile_phone, work_phone=work_phone)
+
+
+    # Добавлен метод получения инфорамации с адресом и эл.почтой со страницы редактирования контакта (дз 14)
+    def get_contact_info_with_address_and_email_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+        firstname = wd.find_element(By.NAME, 'firstname').get_attribute('value')
+        lastname = wd.find_element(By.NAME, 'lastname').get_attribute('value')
+        id = wd.find_element(By.NAME, 'id').get_attribute('value')
+        address = wd.find_element(By.TAG_NAME, 'textarea').get_attribute('value')
+        email = wd.find_element(By.NAME, 'email').get_attribute('value')
+        email2 = wd.find_element(By.NAME, 'email2').get_attribute('value')
+        email3 = wd.find_element(By.NAME, 'email3').get_attribute('value')
+        home_phone = wd.find_element(By.NAME, 'home').get_attribute('value')
+        mobile_phone = wd.find_element(By.NAME, 'mobile').get_attribute('value')
+        work_phone = wd.find_element(By.NAME, 'work').get_attribute('value')
+        return Contact(firstname=firstname, lastname=lastname, id=id, address=address, email=email, email2=email2, email3=email3, home_phone=home_phone,
+                       mobile_phone=mobile_phone, work_phone=work_phone)
 
 
     # Добавлен метод получения информации со страницы просмотра информации о контакте (урок 5-5)

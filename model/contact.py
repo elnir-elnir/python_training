@@ -8,10 +8,12 @@ from sys import maxsize
 class Contact:
     # Добавляем в параметры идентификатор (дз 11)
     # И модифицируем конструктор - None is special value/ None means that field not initialized (lesson 3-2)
-    # Добавляем атрибут all__phones_from_home_page, чтобы реализовать метод обратной проверки - путем
+    # Добавляем атрибут all_phones_from_home_page, чтобы реализовать метод обратной проверки - путем
     # склеивания строк (урок 5-6)
+    # Добавляем атрибут all_e_mails_from_home_page, чт обы реализовать метод обратной проверки - путем
+    # склеивания строк (дз 14)
     def __init__(self, id=None, firstname=None, middlename=None, lastname=None, nickname=None, title=None, company=None, address=None, home_phone=None, mobile_phone=None,
-                 work_phone=None, email=None, email2=None, email3=None, homepage=None, bday=None, bmonth=None, byear=None, aday=None, amonth=None, ayear=None, new_group=None, all_phones_from_home_page=None):
+                 work_phone=None, email=None, email2=None, email3=None, homepage=None, bday=None, bmonth=None, byear=None, aday=None, amonth=None, ayear=None, new_group=None, all_emails_from_home_page=None, all_phones_from_home_page=None):
         self.firstname = firstname
         self.middlename = middlename
         self.lastname = lastname
@@ -33,6 +35,7 @@ class Contact:
         self.amonth = amonth
         self.ayear = ayear
         self.new_group = new_group
+        self.all_emails_from_home_page = all_emails_from_home_page
         self.all_phones_from_home_page = all_phones_from_home_page
         self.id = id
 
