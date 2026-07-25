@@ -10,10 +10,13 @@ class Contact:
     # И модифицируем конструктор - None is special value/ None means that field not initialized (lesson 3-2)
     # Добавляем атрибут all_phones_from_home_page, чтобы реализовать метод обратной проверки - путем
     # склеивания строк (урок 5-6)
-    # Добавляем атрибут all_e_mails_from_home_page, чт обы реализовать метод обратной проверки - путем
+    # Добавляем атрибут all_e_mails_from_home_page, чтобы реализовать метод обратной проверки - путем
     # склеивания строк (дз 14)
-    def __init__(self, id=None, firstname=None, middlename=None, lastname=None, nickname=None, title=None, company=None, address=None, home_phone=None, mobile_phone=None,
-                 work_phone=None, email=None, email2=None, email3=None, homepage=None, bday=None, bmonth=None, byear=None, aday=None, amonth=None, ayear=None, new_group=None, all_emails_from_home_page=None, all_phones_from_home_page=None):
+    def __init__(self, id=None, firstname=None, middlename=None, lastname=None, nickname=None, title=None,
+                 company=None, address=None, home_phone=None, mobile_phone=None, work_phone=None,
+                 email=None, email2=None, email3=None, homepage=None, bday=None, bmonth=None, byear=None,
+                 aday=None, amonth=None, ayear=None, new_group=None, all_emails_from_home_page=None,
+                 all_phones_from_home_page=None):
         self.firstname = firstname
         self.middlename = middlename
         self.lastname = lastname
@@ -42,8 +45,14 @@ class Contact:
 
     # Для получения информации об объекте реализуем функцию, которая определяет вывод объекта в консоль
     # урок 4-8, дз 11
+    # Метод модифицирован для получения в отчетах более полной информации о параметрах объекта (дз 15)
     def __repr__(self):
-        return "%s:%s:%s" % (self.id, self.firstname, self.lastname)
+        return "%s:%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s" % (self.id, self.firstname, self.lastname,
+                                                           self.middlename, self.address, self.home_phone,
+                                                           self.mobile_phone, self.work_phone, self.email,
+                                                           self.email2, self.email3, self.bday, self.bmonth,
+                                                        self.byear, self.aday, self.amonth, self.ayear,
+                                                        self.new_group)
 
 
     # Определяем функцию для логического сравнения, т. е. по смыслу (по имени, фамилии, идентификаторам).

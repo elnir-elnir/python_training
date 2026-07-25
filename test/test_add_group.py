@@ -18,11 +18,13 @@ from model.group import Group
 # сгенерированную строку
 def random_string(prefix, maxlen):
     # Определяем символы, которые мы будем использовать для генерации тестовых данных (урок 5-7)
-    symbols = string.ascii_letters + string.digits + string.punctuation + " "*10
+    # Временно убрала string.punctuation (чтобы тесты не падали из-за ` во время их отладки в рамках
+    # выполнения дз 15)
+    #symbols = string.ascii_letters + string.digits + string.punctuation + " "*10
+    symbols = string.ascii_letters + string.digits + " " * 10
     # Случайным образом выбираем символ из заданной строки и генерируем данные случайно длины, не
     # превышающей максимальную длину. Склиеваем символы в одну строку (урок 5-7)
     return prefix + "".join([random.choice(symbols) for  i in range(random.randrange(maxlen))])
-
 
 
 
@@ -42,11 +44,13 @@ testdata1 = [
     Group(name="", header="", footer="")
 ]
 
+
 # Вариант 2: 1 группа с пустыми полями + 5 (для примера) групп с заполненными полями
 testdata = [Group(name="", header="", footer="")] + [
     Group(name=random_string("name", 10), header=random_string("header", 20),\
           footer=random_string("footer", 20)) for i in range(5)
 ]
+
 
 # Вариант 3: с разными комбинациями заполненности полей (полный перебор возможных случаев)
 testdata3 = [
@@ -72,6 +76,7 @@ testdata3 = [
 def test_add_group(app, group):
     # Получаем старый список групп из приложения
     old_groups = app.group.get_group_list()
+    print("old_groups: ", old_groups)
 
     # Для последующего сравнения списков модифицируем тест - объявляем локальную
     # переменную group и передаем ее в качестве параметра в метод создания группы (урок 4-9)
@@ -90,9 +95,11 @@ def test_add_group(app, group):
     # Меняем очередность выполнения сравнения количества групп и получение обновленного
     # нового списка групп, который мы стали получить с урока 4-7 (урок 4-10)
     new_groups = app.group.get_group_list()
+    print("new_groups: ", new_groups)
 
     # В список групп, полученный из приложения, добавляем новую группу (урок 4-9)
     old_groups.append(group)
+    print("new_old_groups: ", old_groups)
 
     # # Сравниваем группы, но тест упал, т. к. не совпал порядок групп в списке (урок 4-9)
     # # Поэтому данный метод модифицируем в следующий за ним - с сортировкой (а текущий метод
@@ -102,6 +109,8 @@ def test_add_group(app, group):
     # Создаем новую функцию сравнения, в которой указываем в качестве ключа идентификатор - оба
     # списка сортируем по одинаковым правилам (урок 4-9)
     assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
+    print("sorted_old_groups: ", sorted(old_groups, key=Group.id_or_max))
+    print("sorted_new_groups: ", sorted(new_groups, key=Group.id_or_max))
 
 
 

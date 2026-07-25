@@ -29,6 +29,22 @@ class ContactHelper:
         self.contact_in_group_cache = None
 
 
+    # Добавлен новый метод, который используется взамен предыдущего в связи с определением в конструкторе
+    # дефолтных значений (дз 15)
+    def create_for_default_values(self, contact):
+        wd = self.app.wd
+        wd.find_element(By.LINK_TEXT, "add new").click()
+        self.fill_contact_form_for_default_values(contact)
+        # wd.find_element(By.NAME, "new_group").click()
+        # Select(wd.find_element(By.NAME, "new_group")).select_by_visible_text(contact.new_group)
+        # #wd.find_element(By.CSS_SELECTOR, f'select[name=new_group] > option[value="{contact.new_group}"]').click()
+        self.change_visible_value("new_group", contact.new_group)
+        wd.find_element(By.XPATH, "//div[@id='content']/form/input[19]").click()
+        # Выполняем сброс кеша в связи с созданием контакта, чтобы считался новый кеш (дз 12)
+        self.contact_cache = None
+        self.contact_in_group_cache = None
+
+
     def fill_contact_form(self, contact):
         wd = self.app.wd
         wd.find_element(By.NAME, "firstname").click()
@@ -96,6 +112,48 @@ class ContactHelper:
         wd.find_element(By.NAME, "ayear").clear()
         wd.find_element(By.NAME, "ayear").send_keys(contact.ayear)
 
+
+    # Добавлен новый метод, который используется взамен предыдущего в связи с определением в конструкторе
+    # дефолтных значений (дз 15)
+    def fill_contact_form_for_default_values(self, contact):
+        wd = self.app.wd
+        self.change_field_value("firstname", contact.firstname)
+        self.change_field_value("middlename", contact.middlename)
+        self.change_field_value("lastname", contact.lastname)
+        self.change_field_value("nickname", contact.nickname)
+        self.change_field_value("title", contact.title)
+        self.change_field_value("company", contact.company)
+        self.change_field_value("address", contact.address)
+        self.change_field_value("home", contact.home_phone)
+        self.change_field_value("mobile", contact.mobile_phone)
+        self.change_field_value("work", contact.work_phone)
+        self.change_field_value("email", contact.email)
+        self.change_field_value("email2", contact.email2)
+        self.change_field_value("email3", contact.email3)
+        self.change_field_value("homepage", contact.homepage)
+        self.change_visible_value("bday", contact.bday)
+        self.change_visible_value("bmonth", contact.bmonth)
+        self.change_field_value("byear", contact.byear)
+        self.change_visible_value("aday", contact.aday)
+        self.change_visible_value("amonth", contact.amonth)
+        self.change_field_value("ayear", contact.ayear)
+
+
+    # add new method (lesson 3-2, дз 15)
+    def change_field_value(self, field_name, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element(By.NAME, field_name).click()
+            wd.find_element(By.NAME, field_name).clear()
+            wd.find_element(By.NAME, field_name).send_keys(text)
+
+
+    # add new method (lesson 3-2, дз 15)
+    def change_visible_value(self, param_name, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element(By.NAME, param_name).click()
+            Select(wd.find_element(By.NAME, param_name)).select_by_visible_text(text)
 
 
     def go_to_next_contact_creation(self):
@@ -326,6 +384,7 @@ class ContactHelper:
     # созданных контактов) - урок 3-5
     def count_of_contacts(self):
         wd = self.app.wd
+        self.open_contact_list_via_addressbook_link()
 
         # wd.find_elements(By.NAME, "selected[]") - находим на странице все элементы
         # с названием "selected[]"
@@ -432,9 +491,9 @@ class ContactHelper:
                 # print("---")
 
                 # Получаем имя (3-й столбец)
-                firstname = cells[1].text
+                firstname = cells[2].text
                 # Получаем фамилию (2-й столбец)
-                lastname = cells[2].text
+                lastname = cells[1].text
                 # Получаем идентификатор
                 id = cells[0].find_element(By.TAG_NAME, "input").get_attribute("value")
                 # # Получаем информацию обо всех телефонах сразу, т. к. в приложении они все хранятся в

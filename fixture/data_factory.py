@@ -26,7 +26,6 @@ class DataFactory:
 
 
 
-
     # For group
 
     def create_custom_group(self):
@@ -34,12 +33,14 @@ class DataFactory:
         self.app.group.create(group)
         return group
 
+
     def create_several_custom_groups(self):
         group1 = Group(name="test_group1", header="test_header1", footer="test_footer1")
         self.app.group.create(group1)
         group2 = Group(name="test_group2", header="test_header2", footer="test_footer2")
         self.app.group.create(group2)
         return group1, group2
+
 
     def full_modified_group(self, group):
         group_name = group.name
