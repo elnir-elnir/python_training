@@ -1,8 +1,8 @@
 # special file for a fixture which that should be shared by all tests
 import json
+import os.path
 
 import pytest
-from selenium.webdriver.common.devtools.v147 import target
 
 from fixture.application import Application
 
@@ -30,10 +30,15 @@ def app(request):
 
     # Проверяем, загружена ли конфигурация (урок 6-7)
     if target is None:
+        # Определена переменная для хранения информации о расположении конфигурационного файла
+        # относительно файла conftest.py с помощью специальной встроенной переменной __file__,
+        # чтобы не указывать путь до файла в ранере (урок 6-8)
+        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   request.config.getoption("--target"))
         # Читаем конфигурационный файл, при этом удалена переменная base_url, перенесенная в
         # конфигурационный файл (урок 6-7)
-        with open(request.config.getoption("--target")) as config_file:
-            target = json.load(config_file)
+        with open(config_file) as f:
+            target = json.load(f)
 
     # !!!Чтобы при работе в IDE загружался конфигурационный файл, необходимо явно указать в ранере
     # место расположения этого файла, т. к. по умолчанию при запуске в IDE рабочей директорией считается
