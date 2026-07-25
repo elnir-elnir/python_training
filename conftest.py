@@ -1,6 +1,9 @@
 # special file for a fixture which that should be shared by all tests
+import json
 
 import pytest
+from selenium.webdriver.common.devtools.v147 import target
+
 from fixture.application import Application
 
 
@@ -9,30 +12,49 @@ from fixture.application import Application
 # Global variable has been added to store the fixture between tests  (lesson 3-3)
 # This variable will be undefined at first (= None)
 fixture = None
+# Определяем глобальную переменную, чтобы конфигурационный файл читать только один раз (при создании
+# фикстуры), а не при выполнении каждого теста (урок 6-7)
+target = None
 
 # added validation of the fixture in fixture of initialization
 @pytest.fixture
 def app(request):
     # Inside the function, we declare that we will use global variable
     global fixture
+    # Указываем, что собираемся использовать глобальную переменную в функции, которая инициализирует
+    # фикстуру (урок 6-7)
+    global target
     # Доступ к параметру hook через значение опции --browser для передачи в фикстуру
     # Application (урок 5-8)
     browser = request.config.getoption("--browser")
-    base_url = request.config.getoption("--base_url")
+
+    # Проверяем, загружена ли конфигурация (урок 6-7)
+    if target is None:
+        # Читаем конфигурационный файл, при этом удалена переменная base_url, перенесенная в
+        # конфигурационный файл (урок 6-7)
+        with open(request.config.getoption("--target")) as config_file:
+            target = json.load(config_file)
+
+    # !!!Чтобы при работе в IDE загружался конфигурационный файл, необходимо явно указать в ранере
+    # место расположения этого файла, т. к. по умолчанию при запуске в IDE рабочей директорией считается
+    # директория, в которой расположен файл python.exe, а не директория проекта.
+    # Для этого в ранере через Edit configuration задаем путь до конфигурационного файла в поле
+    # "Working directory", т. е. в моем случае путь: C:/Users/.../developing/PythonProject/python_training
+    # (см. на примере ранера Python tests in test_add_group.py (chrome))
 
     # added check for correct fixture
-    if fixture is None:
+    # Условие оптимизировано - удален блок else (из урока 3-3) за счет объединения условий
+    # в результате чего удалено дублирование (урок 6-7)
+    if fixture is None or not fixture.is_valid():
         # fixture has been initialized
-        fixture = Application(browser=browser, base_url=base_url)
-    else:
-        # We determine what to do if fixture has been corrupted (lesson 3-3)
-        if not fixture.is_valid():
-            fixture = Application(browser=browser, base_url=base_url)
+        # Переменная base_url читается из конфигурационного файла (урок 6-7)
+        fixture = Application(browser=browser, base_url=target['base_url'])
 
     # # lesson 3-4 - Функция login вынесена из if-then и заменена на интеллектуальную функцию
     # # ensure_login, чтобы выполняеть проверку, нужно ли нам выполнять логин, при каждом обращении
     # # к функции, инициализирующей фикстуру
-    fixture.session.ensure_login(username="admin", password="secret")
+    # Переменные username и password читаются из конфигурационного файла (урок 6-7)
+    fixture.session.ensure_login(username=target["username"], password=target["password"])
     return fixture
 
 
@@ -57,4 +79,6 @@ def pytest_addoption(parser):
     # по умолчанию
     # Доступ к параметру получаем через объект request
     parser.addoption("--browser", action="store", default="firefox")
-    parser.addoption("--base_url", action="store", default="http://localhost/addressbook/")
+    # Определение стартовой страницы приложения перенесено в конфигурационный файл, ссылка на который
+    # должна быть указана при запуске тестов в параметре target (урок 6-7)
+    parser.addoption("--target", action="store", default="target.json")

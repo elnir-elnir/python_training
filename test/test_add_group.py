@@ -18,10 +18,10 @@ from model.group import Group
 # сгенерированную строку
 def random_string(prefix, maxlen):
     # Определяем символы, которые мы будем использовать для генерации тестовых данных (урок 5-7)
-    # Временно убрала string.punctuation (чтобы тесты не падали из-за ` во время их отладки в рамках
-    # выполнения дз 15)
+    # Временно убрала string.punctuation и " " * 10 (чтобы тесты не падали из-за "`" и " "
+    # во время их отладки в рамках выполнения дз 15 и дз 16)
     #symbols = string.ascii_letters + string.digits + string.punctuation + " "*10
-    symbols = string.ascii_letters + string.digits + " " * 10
+    symbols = string.ascii_letters + string.digits + " "
     # Случайным образом выбираем символ из заданной строки и генерируем данные случайно длины, не
     # превышающей максимальную длину. Склиеваем символы в одну строку (урок 5-7)
     return prefix + "".join([random.choice(symbols) for  i in range(random.randrange(maxlen))])
