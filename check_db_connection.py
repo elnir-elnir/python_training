@@ -3,9 +3,10 @@
 # description: Проверка соединения с базой данных MySQL
 #------------------------------------------------------------------------------
 
-# # "Официальный" драйвер
+# # "Официальный" драйвер (https://pypi.org/project/mysql-connector-python/,
+# pip install mysql-connector-python)
 # import mysql.connector
-# Альтернативный драйвер
+# Альтернативный драйвер (https://pypi.org/project/PyMySQL/, pip install PyMySQL )
 import pymysql.cursors
 
 # Устанавливаем соединение с базой данных (урок 7-1)
