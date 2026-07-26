@@ -12,8 +12,9 @@ from model.group import Group
 # Удалена аннотация parametrize и изменены параметры тестовой функции таким образом, чтобы название
 # параметра указывало на источник тестовых данных. Например, data_groups указывает, что данные
 # загружаются из модуля groups, который находится в пакете data (урок 6-11)
-def test_add_group(app, data_groups):
-    group = data_groups
+# Изменено название параметра для реализации загрузки тестовых данных из файла data\groups.json (урок 6-12)
+def test_add_group(app, json_groups): # вместо data_groups теперь json_groups
+    group = json_groups
 
     old_groups = app.group.get_group_list()
     print("old_groups: ", old_groups)

@@ -2,6 +2,7 @@
 import json
 import os.path
 import importlib
+import jsonpickle
 
 import pytest
 
@@ -34,6 +35,10 @@ def app(request):
         # Определена переменная для хранения информации о расположении конфигурационного файла
         # относительно файла conftest.py с помощью специальной встроенной переменной __file__,
         # чтобы не указывать путь до файла в ранере (урок 6-8)
+        # Здесь:
+        # os.path.abspath(__file__) - получаем путь к файлу conftest.py
+        # os.path.dirname(...) - определяем директорию, в которой расположен файл conftest.py
+        # os.path.join(...(...)) - подклеиваем путь к файлу
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    request.config.getoption("--target"))
         # Читаем конфигурационный файл, при этом удалена переменная base_url, перенесенная в
@@ -102,14 +107,31 @@ def pytest_generate_tests(metafunc):
         if fixture.startswith("data_"):
             # Как-только встретилась фикстура data_, загружаем тестовые данные из модуля, который имеет
             # такое же название, как фикстура, но обрезанное (удалены первые 5 символов)
-            testdata = load_form_module(fixture[5:])
+            testdata = load_from_module(fixture[5:])
             # Используем загруженные тестовые данные, чтобы параметризовать тестовую функцию. Также
             # подставляем строковое представление (ids=)
             metafunc.parametrize(fixture, testdata, ids=[str(x) for x in testdata])
 
+        # Дополняем метод проверкой фикстуры для загрузки из файла json (урок 6-12)
+        elif fixture.startswith("json_"):
+            testdata = load_from_json(fixture[5:])
+            metafunc.parametrize(fixture, testdata, ids=[str(x) for x in testdata])
+
 
 # Добавлен метод для загрузки данных из модуля с заданным именем (урок 6-11)
-def load_form_module(module):
+def load_from_module(module):
     # Указываем названи е модуля, который хотим импортировать ("data.%s" % module) и берем из него
     # данные (testdata)
     return importlib.import_module("data.%s" % module).testdata
+
+
+# Добавлен метод загрузки тестовых данных из файла json (урок 6-12)
+# Для преобразования данных из файла json необходимо импортировать библиотеку jsonpickle
+# (pip install jsonpickle) в env проекта и меняем метод записи сгенерированных тестовых данных
+# в файл в generator\group.py, т. к. нам необходимо связать загружаемые данные
+# с конкретным классом (урок 6-12)
+# Библиотека jsonpickle: https://jsonpickle.github.io/
+def load_from_json(file):
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/%s.json" % file)) as f:
+        # Перекодируем прочитанный файл обратно в исходный формат в виде набора объектов Python
+        return jsonpickle.decode(f.read())
