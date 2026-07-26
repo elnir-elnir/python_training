@@ -7,8 +7,7 @@ import jsonpickle
 import pytest
 
 from fixture.application import Application
-
-
+from fixture.db import DbFixture
 
 #
 # Global variable has been added to store the fixture between tests  (lesson 3-3)
@@ -17,6 +16,27 @@ fixture = None
 # Определяем глобальную переменную, чтобы конфигурационный файл читать только один раз (при создании
 # фикстуры), а не при выполнении каждого теста (урок 6-7)
 target = None
+
+
+# Добавлен метод загрузки конфигурационного файла в связи с добавлением фикстуры для взаимодействия
+# с базой данных и дополнением конфигурационного файла информацией о БД(урок 7-2)
+def load_config(file):
+    global target
+    if target is None:
+        # Определена переменная для хранения информации о расположении конфигурационного файла
+        # относительно файла conftest.py с помощью специальной встроенной переменной __file__,
+        # чтобы не указывать путь до файла в ранере (урок 6-8)
+        # Здесь:
+        # os.path.abspath(__file__) - получаем путь к файлу conftest.py
+        # os.path.dirname(...) - определяем директорию, в которой расположен файл conftest.py
+        # os.path.join(...(...)) - подклеиваем путь к файлу
+        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), file)
+        # Читаем конфигурационный файл, при этом удалена переменная base_url, перенесенная в
+        # конфигурационный файл (урок 6-7)
+        with open(config_file) as f:
+            target = json.load(f)
+    return target
+
 
 # added validation of the fixture in fixture of initialization
 @pytest.fixture
@@ -30,21 +50,10 @@ def app(request):
     # Application (урок 5-8)
     browser = request.config.getoption("--browser")
 
-    # Проверяем, загружена ли конфигурация (урок 6-7)
-    if target is None:
-        # Определена переменная для хранения информации о расположении конфигурационного файла
-        # относительно файла conftest.py с помощью специальной встроенной переменной __file__,
-        # чтобы не указывать путь до файла в ранере (урок 6-8)
-        # Здесь:
-        # os.path.abspath(__file__) - получаем путь к файлу conftest.py
-        # os.path.dirname(...) - определяем директорию, в которой расположен файл conftest.py
-        # os.path.join(...(...)) - подклеиваем путь к файлу
-        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   request.config.getoption("--target"))
-        # Читаем конфигурационный файл, при этом удалена переменная base_url, перенесенная в
-        # конфигурационный файл (урок 6-7)
-        with open(config_file) as f:
-            target = json.load(f)
+    # Проверяем, загружена ли конфигурация (урок 6-7). В связи с созданием метода load_config
+    #  внесены изменения и добавлена переменная web_config (урок 7-2)
+    # ['web'] - означает, что берутся данные блока "web" конфигурационного файла
+    web_config = load_config(request.config.getoption("--target"))['web']
 
     # !!!Чтобы при работе в IDE загружался конфигурационный файл, необходимо явно указать в ранере
     # место расположения этого файла, т. к. по умолчанию при запуске в IDE рабочей директорией считается
@@ -59,14 +68,36 @@ def app(request):
     if fixture is None or not fixture.is_valid():
         # fixture has been initialized
         # Переменная base_url читается из конфигурационного файла (урок 6-7)
-        fixture = Application(browser=browser, base_url=target['base_url'])
+        # target заменен на web_config (урок 7-2)
+        fixture = Application(browser=browser, base_url=web_config['base_url'])
 
     # # lesson 3-4 - Функция login вынесена из if-then и заменена на интеллектуальную функцию
     # # ensure_login, чтобы выполняеть проверку, нужно ли нам выполнять логин, при каждом обращении
     # # к функции, инициализирующей фикстуру
     # Переменные username и password читаются из конфигурационного файла (урок 6-7)
-    fixture.session.ensure_login(username=target["username"], password=target["password"])
+    # target заменен на web_config (урок 7-2)
+    fixture.session.ensure_login(username=web_config["username"], password=web_config["password"])
     return fixture
+
+
+
+# Существует 2 способа создания фикстуры для взаимодействия с БД:
+# 1) независимая фикстура - задается в файле conftest.py, вариант подходит для ситуации, когда необходимо
+# выполнять тесты не только с запуском браузера, но и без запуска браузера;
+# 2) как вспомогательный методы (Helper), который вызывается при запуске фикстуры Application - вариант
+# подходит для выполнения тестов только с запуском браузера
+# Добавляем независимую фикстуру для взаимодействия с базой данных по упрощенному варианту, т. е.
+# предполагаем, что она не может сломаться
+# Фикстура будет иницилизироваться в начале сессии, а в конце останавливаться(урок 7-2)
+@pytest.fixture(scope="session")
+def db(request):
+    db_config = load_config(request.config.getoption("--target"))['db']
+    dbfixture = DbFixture(host=db_config['host'], name=db_config['name'], user=db_config['user'],
+                          password=db_config['password'])
+    def fin():
+        dbfixture.destroy()
+    request.addfinalizer(fin)
+    return dbfixture
 
 
 
