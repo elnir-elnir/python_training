@@ -15,7 +15,12 @@ class DbFixture:
         self.name = name
         self.user = user
         self.password = password
-        self.connection = pymysql.connect(host=host, db=name, user=user, password=password)
+        # autocommit=True - если этот параметр указан, то кеш после каждого запроса в БД сбрасывается, а
+        # если не указан, то данные кешируются
+        # Параметр добавлен для получения правильного списка при выполнении тестов с действиями
+        # непосредственно в БД (урок 7-4)
+        # self.connection = pymysql.connect(host=host, db=name, user=user, password=password)
+        self.connection = pymysql.connect(host=host, db=name, user=user, password=password, autocommit=True)
 
 
     # Метод получения списка групп из БД (урок 7-3)

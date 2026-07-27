@@ -84,6 +84,19 @@ class GroupHelper:
         self.group_cache = None
 
 
+    # Добавлен метод удаления группы по идентификатору (урок 7-4)
+    def delete_group_by_id(self, id):
+        wd = self.app.wd
+        self.open_groups_page()
+        # Меняем метод выбора группы с select_first_group на select_group_by_index (урок 4-11)
+        self.select_group_by_id(id)
+        # submit deletion
+        wd.find_element(By.NAME, "delete").click()
+        self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с удалением группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
+
+
     # add new method (swt, lesson 3-2)
     # Метод модифицирован в связи с добавлением нового метода - выбор группы по индексу (урок 4-11)
     def select_first_group(self):
@@ -96,6 +109,12 @@ class GroupHelper:
         # Изменилась функция выбора группы в списке (урок 4-11)
         #wd.find_element(By.NAME, "selected[]").click()
         wd.find_elements(By.NAME, "selected[]")[index].click()
+
+
+    # Добавлен метод выбора группы по идентификатору (урок 7-4)
+    def select_group_by_id(self, id):
+        wd = self.app.wd
+        wd.find_element(By.CSS_SELECTOR, "input[value='%s']" % id).click()
 
 
     def delete_group_by_name(self, group_name):
