@@ -113,6 +113,11 @@ def stop(request):
     return fixture
 
 
+# Добавлена фикстура для включения проверки на соответствие данных в БД и UI при запуске тестов (урок 7-5)
+@pytest.fixture
+def check_ui(request):
+    return request.config.getoption("--check_ui")
+
 
 # Добавляем hook для указания параметров из командной строки (урок 5-8)
 # Hook см. здесь: pytest.org/latest/plugins.html?highlight=pytest_addoption#well-specified-hooks
@@ -124,6 +129,9 @@ def pytest_addoption(parser):
     # Определение стартовой страницы приложения перенесено в конфигурационный файл, ссылка на который
     # должна быть указана при запуске тестов в параметре target (урок 6-7)
     parser.addoption("--target", action="store", default="target.json")
+    # Добавлена опция check_ui. Действие action="store_true" означает, что значение опции автоматически
+    # указывается true, если опция присутствует, и false, если она отсутствует(урок 7-5)
+    parser.addoption("--check_ui", action="store_true")
 
 
 # Добавлен метод для параметризации тестовой функции путем загрузки тестовых данных из указанного модуля

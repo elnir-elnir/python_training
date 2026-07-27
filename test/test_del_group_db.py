@@ -13,8 +13,21 @@ from model.group import Group
 
 
 
-# Добавляем параметр для вызова альтернативного способа загружки списка групп (урок 7-4)
-def test_delete_some_group(app, db):
+# Добавляем параметр для вызова альтернативного способа загрузки списка групп (урок 7-4)
+# Параметр check_ui добавлен для реализации отключаемой проверки соответствия списка групп из UI
+# списку групп из БД, чтобы включать эту проверку при запуске теста (урок 7-5)
+# !!!!!При выполнении теста в IE тест падает в
+# if check_ui:
+# >           assert sorted(new_groups, key=Group.id_or_max) == sorted(app.group.get_group_list(),
+#                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+#                                                                      key=Group.id_or_max)
+# с ошибкой:
+# selenium.common.exceptions.JavascriptException: Message: Error from JavaScript: Объект не поддерживает свойство или метод "includes"
+# env\Lib\site-packages\selenium\webdriver\remote\errorhandler.py:232: JavascriptException
+# Возможно, что проблема решена в более новой версии IE и веб-драйвера (проверить после курса).
+# Если не решена, то проверку надо переписать с учетом этой особенности IE
+# Установленные версии: IE 11.1882.26100.0, IEDriverServer.exe 4.14.0.0 (32-bit)!!!!!
+def test_delete_some_group(app, db, check_ui):
     # Подсчет количества групп также выполняем через обращение к базе данных (урок 7-4)
     #if app.group.count() == 0:
     if len(db.get_group_list()) == 0:
@@ -39,4 +52,9 @@ def test_delete_some_group(app, db):
     #old_groups[index:index+1] = []
     old_groups.remove(group)
 
-    assert sorted(old_groups, key=lambda group: group.id) == sorted(new_groups, key=lambda group: group.id)
+    assert old_groups == new_groups
+    # Добавляем отключаемую проверку соответствия списка групп в UI списку групп из БД
+    # Для этого добавлен параметр в тестовую функцию и создана фикстура (урок 7-5)
+    if check_ui:
+        assert sorted(new_groups, key=Group.id_or_max) == sorted(app.group.get_group_list(),
+                                                                 key=Group.id_or_max)
