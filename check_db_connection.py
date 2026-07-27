@@ -12,6 +12,7 @@ import pymysql.cursors
 from fixture.db import DbFixture
 
 from fixture.orm import ORMFixture
+from model.group import Group
 
 
 
@@ -60,12 +61,43 @@ from fixture.orm import ORMFixture
 #     db.destroy()
 
 
-# Получаем список групп c помощью ORM
+# # Получаем список групп c помощью ORM
+#
+# db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+#
+# try:
+#     l = db.get_group_list()
+#     for item in l:
+#         print(item)
+#     print(len(l))
+# # ORM автоматически закрывает соединение с БД, поэтому блок finally не нужен - ставим заглушку
+# finally:
+#     pass
+
+
+# # Получаем список контактов c помощью ORM
+#
+# db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+#
+# try:
+#     l = db.get_contact_list()
+#     for item in l:
+#         print(item)
+#     print(len(l))
+# # ORM автоматически закрывает соединение с БД, поэтому блок finally не нужен - ставим заглушку
+# finally:
+#     pass
+
+
+# Получаем список контактов, включенных в группу, c помощью ORM (урок 7-8)
+# и
+# Получаем список контактов, не включенных в заданную группу, c помощью ORM (урок 7-8)
 
 db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
 
 try:
-    l = db.get_group_list()
+    #l = db.get_contacts_in_group(Group(id="1344")) # включены в группу
+    l = db.get_contacts_not_in_group(Group(id="1344"))  # не включены в группу
     for item in l:
         print(item)
     print(len(l))
