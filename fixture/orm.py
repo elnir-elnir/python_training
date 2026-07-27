@@ -77,7 +77,12 @@ class ORMFixture:
         # параметров точно в таком виде, как передается при инициализации коннектора и параметр
         # conv для преобразования невалидной даты, т.к. в поле deprecated для актуальных контактов
         # отображаются значения 0000-00-00 00-00-00, а в методе конвертации мы это преобразовываем в None
-        self.db.bind('mysql', host=host, database=name, user=user, password=password, conv=decoders)
+        # В рамках дз 20 выполнена замена параметра conv=decoders на charset='utf8', т. к.
+        # тест test_delete_some_contact_not_in_group_via_edit_page выполнился с ошибками:
+        # Ошибка KeyError: <class 'str'> и TypeError: no default type converter defined
+        #self.db.bind('mysql', host=host, database=name, user=user, password=password, conv=decoders)
+        self.db.bind('mysql', host=host, database=name, user=user, password=password,
+                     charset='utf8')
 
         # В момент вызова метода generate_mapping выполняется сопоставление свойств описанных классов
         # с таблицами и полями таблиц БД
@@ -148,3 +153,11 @@ class ORMFixture:
         orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == str(group.id)))[0]
         return self.convert_contacts_to_model(
             select(c for c in ORMFixture.ORMContact if c.deprecated is None and orm_group not in c.groups))
+
+
+    # Метод получения списка контактов, которые не входят ни в одну группу (дз 20)
+    @db_session
+    def get_contacts_not_in_any_group(self):
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact if c.deprecated is None and len(c.groups) == 0))
+

@@ -8,6 +8,7 @@ import pytest
 
 from fixture.application import Application
 from fixture.db import DbFixture
+from fixture.orm import ORMFixture
 
 #
 # Global variable has been added to store the fixture between tests  (lesson 3-3)
@@ -98,6 +99,22 @@ def db(request):
         dbfixture.destroy()
     request.addfinalizer(fin)
     return dbfixture
+
+
+# Добавлена фикстура для работы с БД через ORM (PonyORM) (дз 20)
+# Фикстура инициализируется в начале сессии, а в конце останавливается
+@pytest.fixture(scope="session")
+def orm(request):
+    db_config = load_config(request.config.getoption("--target"))['db']
+    ormfixture = ORMFixture(host=db_config['host'], name=db_config['name'], user=db_config['user'],
+                            password=db_config['password'])
+
+    def fin():
+        # Закрываем соединение с БД. ORMFixture не требует явного destroy, но добавлено для единообразия
+        ormfixture.db.disconnect()
+
+    request.addfinalizer(fin)
+    return ormfixture
 
 
 
