@@ -11,9 +11,11 @@ import pymysql.cursors
 
 from fixture.db import DbFixture
 
+from fixture.orm import ORMFixture
 
 
-# Проверка соединения с базой данных MySQL (урок 7-1)
+
+## Проверка соединения с базой данных MySQL (урок 7-1)
 
 # Устанавливаем соединение с базой данных (урок 7-1)
 # # "официальным" драйвером
@@ -34,9 +36,9 @@ from fixture.db import DbFixture
 
 
 
-# Получение информации из базы данных и вывод ее в консоль (урок 7-6)
+## Получение информации из базы данных и вывод ее в консоль (урок 7-6)
 
-db = DbFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+#db = DbFixture(host="127.0.0.1", name="addressbook", user="root", password="")
 
 # # Получаем список групп
 # try:
@@ -48,11 +50,25 @@ db = DbFixture(host="127.0.0.1", name="addressbook", user="root", password="")
 #     db.destroy()
 
 
-# Получаем список контактов
+# # Получаем список контактов
+# try:
+#     contacts = db.get_contact_list()
+#     for contact in contacts:
+#         print(contact)
+#     print(len(contacts))
+# finally:
+#     db.destroy()
+
+
+# Получаем список групп c помощью ORM
+
+db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+
 try:
-    contacts = db.get_contact_list()
-    for contact in contacts:
-        print(contact)
-    print(len(contacts))
+    l = db.get_group_list()
+    for item in l:
+        print(item)
+    print(len(l))
+# ORM автоматически закрывает соединение с БД, поэтому блок finally не нужен - ставим заглушку
 finally:
-    db.destroy()
+    pass
