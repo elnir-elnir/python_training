@@ -100,7 +100,7 @@ def test_delete_some_contact_not_in_group_via_birthday_page(app):
     app.contact.filter_contacts_by_group("[none]")
 
     # Если нет контактов без группы — создаём контакт
-    if app.contact.count_of_contacts() == 0:
+    if app.group.count_of_contacts_in_group('[none]') == 0:
         app.data.create_contact_with_default_group()
 
     # Получаем список контактов из приложения до удаления контакта (дз 11)

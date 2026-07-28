@@ -211,6 +211,22 @@ class GroupHelper:
         self.group_cache = None
 
 
+    # Добавлен метод модификации группы по идентификатору (дз 20)
+    def modify_group_by_id(self, id, new_group_data):
+        wd = self.app.wd
+        self.open_groups_page()
+        self.select_group_by_id(id)
+        # open modification form
+        wd.find_element(By.NAME, "edit").click()
+        # fill group form
+        self.fill_group_form(new_group_data)
+        # submit modification
+        wd.find_element(By.NAME, "update").click()
+        self.return_to_groups_page()
+        # Выполняем сброс кеша в связи с модификацией группы, чтобы считался новый кеш (урок 4-10)
+        self.group_cache = None
+
+
     # Добавялем метод подсчета количества чек-боксов на странице groups (определяем количество
     # созданных групп) - урок 3-5
     def count(self):

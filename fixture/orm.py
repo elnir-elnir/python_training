@@ -62,10 +62,12 @@ class ORMFixture:
         id = PrimaryKey(int, column="id")
         firstname = Optional(str, column="firstname")
         lastname = Optional(str, column="lastname")
+        bday = Optional(str, column="bday")
+        bmonth = Optional(str, column="bmonth")
         deprecated = Optional(datetime, column="deprecated")
         # Добавлен атрибут специального типа для описания связей между объектами (урок 7-8)
         # Связь осуществляется при помощи таблицы address_in_groups, поиск осуществляется по
-        #         # указанному столбцу column
+        # указанному столбцу column
         groups = Set(lambda: ORMFixture.ORMGroup, table="address_in_groups", column="group_id",
                      reverse="contacts", lazy=True)
 
@@ -113,6 +115,8 @@ class ORMFixture:
 
     # Функции, которые получают списки объектов
 
+    ## Списки групп
+
     # Получение списка групп (урок 7-7)
     # Каждый блок кода, в котором происходит взаимодействие с БД, должен быть особым образом помечен -
     # необходимо указать, что это блок кода должен выполняться в рамках сесси (при этом сессия открывается
@@ -134,20 +138,69 @@ class ORMFixture:
     #         return self.convert_groups_to_model(select(g for g in ORMFixture.ORMGroup))
 
 
+    # Получение списка групп, содержащих более 1 контакта (дз 20)
+    @db_session
+    def get_group_list_with_several_contacts(self):
+        # Получаем список всех групп
+        all_groups = list(select(g for g in ORMFixture.ORMGroup))
+
+        # Объявляем переменную для сохранения списка групп с несколькими контактами
+        result = []
+
+        # Для каждой группы из списка all_groups проверяем выполнение условий
+        for group in all_groups:
+            # Находим все контакты, у которых в таблице связей address_in_groups в поле group_id
+            # указан id текущей группы (по которой выполняется цикл) и в поле deprecated отображается
+            # 0000-00-00 00:00:00
+            contacts_in_group = list(
+                select(c for c in ORMFixture.ORMContact
+                       if c.deprecated is None and group in c.groups)
+            )
+            # Определяем количество контактов в текущей группе и при выполнении условия > 1 добавляем
+            # текущую группу в итоговый список result
+            if len(contacts_in_group) > 1:
+                result.append(group)
+        return self.convert_groups_to_model(result)
+
+
+    # Получение списка групп, несодержащих контакты (дз 20)
+    @db_session
+    def get_group_list_without_contacts(self):
+        # Получаем список всех актуальных контактов
+        actual_contacts = select(c for c in ORMFixture.ORMContact if c.deprecated is None)
+
+        # Получаем id групп, в которые включены актуальные контакты
+        group_id_with_contacts = set()
+        for contact in actual_contacts:
+            for group in contact.groups:
+                group_id_with_contacts.add(group.id)
+
+        # Получаем список всех групп
+        all_groups = list(select(g for g in ORMFixture.ORMGroup))
+
+        # Получаем список групп, в которые не включены контакты (групп нет в group_id_with_contacts)
+        result = [g for g in all_groups if g.id not in group_id_with_contacts]
+
+        return self.convert_groups_to_model(result)
+
+
+    ## Списки контактов
+
     # Получение списка контактов (урок 7-7)
     @db_session
     def get_contact_list(self):
-        return self.convert_contacts_to_model(select(c for c in ORMFixture.ORMContact if c.deprecated is None))
+        return self.convert_contacts_to_model(select(
+            c for c in ORMFixture.ORMContact if c.deprecated is None))
 
 
-    # Метод получения списка контактов, включенных в группу (урок 7-8)
+    # Метод получения списка контактов, включенных в группу, по id (урок 7-8)
     @db_session
     def get_contacts_in_group(self, group):
         orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == str(group.id)))[0]
         return self.convert_contacts_to_model(orm_group.contacts)
 
 
-    # Метод получения списка контактов, которые не входят в заданную группу (урок 7-8)
+    # Метод получения списка контактов, которые не входят в заданную группу, по id (урок 7-8)
     @db_session
     def get_contacts_not_in_group(self, group):
         orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == str(group.id)))[0]
@@ -155,9 +208,22 @@ class ORMFixture:
             select(c for c in ORMFixture.ORMContact if c.deprecated is None and orm_group not in c.groups))
 
 
-    # Метод получения списка контактов, которые не входят ни в одну группу (дз 20)
+    # Получение списка контактов, которые не входят ни в одну группу (дз 20)
     @db_session
     def get_contacts_not_in_any_group(self):
         return self.convert_contacts_to_model(
             select(c for c in ORMFixture.ORMContact if c.deprecated is None and len(c.groups) == 0))
 
+
+    # Получение списка контактов, включенных только в одну групп (дз 20)
+    @db_session
+    def get_contacts_included_in_one_group(self):
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact if c.deprecated is None and len(c.groups) == 1))
+
+
+    # Получение списка контактов, которые входят в несколько групп (дз 20)
+    @db_session
+    def get_contacts_in_several_group(self):
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact if c.deprecated is None and len(c.groups) > 1))

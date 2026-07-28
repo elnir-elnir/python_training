@@ -204,6 +204,12 @@ class ContactHelper:
         wd.find_elements(By.NAME, "selected[]")[index].click()
 
 
+    # Добавляем новый метод - выбор контакта по идентификатору (дз 20)
+    def select_contact_by_id(self, id):
+        wd = self.app.wd
+        wd.find_element(By.CSS_SELECTOR, "input[value='%s']" % id).click()
+
+
     def set_group(self, group_name):
         wd = self.app.wd
         wd.find_element(By.NAME, "to_group").click()
