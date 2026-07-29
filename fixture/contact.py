@@ -365,6 +365,16 @@ class ContactHelper:
         self.contact_in_group_cache = None
 
 
+    # Добавлен метод модификации контакта со значениями по умолчанию (дз 20)
+    def edit_contact_for_default_values(self, contact):
+        wd = self.app.wd
+        self.fill_contact_form_for_default_values(contact)
+        wd.find_element(By.NAME, "update").click()
+        # Выполняем сброс кеша в связи с модификацией контакта, чтобы считался новый кеш (дз 12)
+        self.contact_cache = None
+        self.contact_in_group_cache = None
+
+
     def delete_contact_from_edit_page(self):
         wd = self.app.wd
         wd.find_element(By.NAME, "delete").click()

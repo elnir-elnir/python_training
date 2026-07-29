@@ -61,6 +61,7 @@ class ORMFixture:
         _table_ = "addressbook"
         id = PrimaryKey(int, column="id")
         firstname = Optional(str, column="firstname")
+        middlename = Optional(str, column="middlename")
         lastname = Optional(str, column="lastname")
         bday = Optional(str, column="bday")
         bmonth = Optional(str, column="bmonth")
@@ -184,6 +185,26 @@ class ORMFixture:
         return self.convert_groups_to_model(result)
 
 
+    # Получение списка групп для контакта по id (дз 20)
+    @db_session
+    def get_groups_for_contact(self, contact):
+        #orm_contact = list(select(c for c in ORMFixture.ORMContact if c.id == int(contact.id)))[0]
+        orm_contact = ORMFixture.ORMContact.get(id=int(contact.id))
+        return self.convert_groups_to_model(orm_contact.groups)
+
+
+    # Получение группы для контакта, включенного только в одну группу, по id контакта (дз 20)
+    @db_session
+    def get_group_for_contact_by_index(self, contact, index):
+        contact_groups = self.get_groups_for_contact(contact)
+
+        if contact_groups:
+            group = contact_groups[index]
+        else:
+            group = None
+        return group
+
+
     ## Списки контактов
 
     # Получение списка контактов (урок 7-7)
@@ -227,3 +248,38 @@ class ORMFixture:
     def get_contacts_in_several_group(self):
         return self.convert_contacts_to_model(
             select(c for c in ORMFixture.ORMContact if c.deprecated is None and len(c.groups) > 1))
+
+
+
+    # Получение данных контакта
+
+    # Добавляем метод получения дня рождения контакта (bday) - дз 20
+    @db_session
+    def get_bday_from_db(self, contact):
+        orm_contact = ORMFixture.ORMContact.get(id=int(contact.id))
+        return orm_contact.bday
+
+    # Добавляем метод получения месяца рождения контакта (bmonth) - дз 20
+    @db_session
+    def get_bmonth_from_db(self, contact):
+        orm_contact = ORMFixture.ORMContact.get(id=int(contact.id))
+        return orm_contact.bmonth
+
+
+    # Добавлен метод проверки наличия у контакта даты рождения - дз 20
+    @db_session
+    def has_birthday(self, contact):
+        bday = self.get_bday_from_db(contact)
+        bmonth = self.get_bmonth_from_db(contact)
+
+        day_valid = False
+        month_valid = False
+
+        if bday in range(1, 32):
+            day_valid = True
+
+        if bmonth in ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                                       'August', 'September', 'October', 'November', 'December']:
+            month_valid = True
+
+        return day_valid and month_valid

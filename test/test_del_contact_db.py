@@ -54,25 +54,33 @@ def test_delete_some_contact_not_in_group_via_edit_page(app, orm, check_ui):
     # Добавляем отключаемую проверку соответствия списка групп в UI списку групп из БД
     # Для этого добавлен параметр в тестовую функцию и создана фикстура (урок 7-5, дз 20)
     if check_ui:
-        assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts,
-                                                                     key=Contact.id_or_max)
+        assert (sorted(new_contacts, key=Contact.id_or_max) ==
+                sorted(app.contact.get_contact_list_in_group("[none]"),
+                                                                     key=Contact.id_or_max))
 
 
 
 def test_delete_some_contact_included_in_one_group_via_edit_page(app, orm, check_ui, data_groups):
     # Предусловия
-    # Проверяем наличие групп с контактами (дз 20)
+    # Проверяем наличие контактов, включенных только в одну группу (дз 20)
     if len(orm.get_contacts_included_in_one_group()) == 0:
+        # Проверяем наличие групп и групп, в которые не включены контакты. При остутствии создаем
+        # группу
         if len(orm.get_group_list()) == 0 or len(orm.get_group_list_without_contacts()) == 0:
             #Group(app.data.create_custom_group())
             group = data_groups
             app.group.create(group)
+        # Случайным образом получаем группу, в которой нет контактов
         group = random.choice(orm.get_group_list_without_contacts())
         print("group: ", group)
 
+        # Проверяем наличие контактов и контактов, не включенных в какую-либо группу
+        # При отсутствии создаем контакт, включенный в группу, выбранную на предыдущем шаге
         if len(orm.get_contact_list()) == 0 or len(orm.get_contacts_not_in_any_group()) == 0:
             app.data.create_contact_with_custom_group(group.name)
 
+        # Если есть контакт, не включенный в какую-либо группу, включаем его в группу, выбранную
+        # при выполнении предыдущих шагов
         if len(orm.get_contacts_not_in_any_group()) > 0:
             contact = random.choice(orm.get_contacts_not_in_any_group())
             app.contact.open_contact_list_via_addressbook_link()
@@ -87,6 +95,10 @@ def test_delete_some_contact_included_in_one_group_via_edit_page(app, orm, check
     contact = random.choice(old_contacts)
     print("contact to delete: ", contact)
 
+    # Определена группа, в которую включен выбранный контакт (дз 20)
+    group = orm.get_group_for_contact_by_index(contact, 0)
+    print("group:  ", group)
+
     # Переходим на страницу со списком контактов
     app.contact.open_contact_list_via_addressbook_link()
 
@@ -95,9 +107,8 @@ def test_delete_some_contact_included_in_one_group_via_edit_page(app, orm, check
     app.contact.go_to_edit_page_by_contact_id(contact.id)
 
     # Тест
-    # Удаляем контакт через страницу редактирования
+    # Удаляем контакт через страницу редактирования контакта и возвращаемся на главную страницу
     app.contact.delete_contact_from_edit_page()
-
     app.contact.return_to_home_page_after_contact_deletion()
 
     # Добавляем проверку списка после удаления со списком, полученным из тестируемого
@@ -115,8 +126,10 @@ def test_delete_some_contact_included_in_one_group_via_edit_page(app, orm, check
     # Добавляем отключаемую проверку соответствия списка групп в UI списку групп из БД
     # Для этого добавлен параметр в тестовую функцию и создана фикстура (урок 7-5, дз 20)
     if check_ui:
-        assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts,
-                                                                     key=Contact.id_or_max)
+        assert (sorted(new_contacts, key=Contact.id_or_max) ==
+                sorted(app.contact.get_contact_list_in_group(group.name),
+                                                                     key=Contact.id_or_max))
+        print("group: ", "id = ", group.id, "name = ", group.name, "header = ", group.header, "footer = ", group.footer)
 
 
 
@@ -146,9 +159,9 @@ def test_delete_some_contact_in_one_group_via_birthday_page(app, orm, check_ui):
 
     contact = random.choice(old_contacts)
 
-    if (contact.bday not in range(1, 32) and
-            contact.bmonth not in ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-                                   'August', 'September', 'October', 'November', 'December']):
+    group = orm.get_group_for_contact_by_index(contact, 0)
+
+    if orm.has_birthday(contact) is False:
         app.contact.open_contact_list_via_addressbook_link()
         app.contact.go_to_edit_page_by_contact_id(contact.id)
         app.contact.set_birthday(bday="3", bmonth="May", byear="1999")
@@ -171,5 +184,6 @@ def test_delete_some_contact_in_one_group_via_birthday_page(app, orm, check_ui):
     # Добавляем отключаемую проверку соответствия списка групп в UI списку групп из БД
     # Для этого добавлен параметр в тестовую функцию и создана фикстура (урок 7-5, дз 20)
     if check_ui:
-        assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts,
-                                                                     key=Contact.id_or_max)
+        assert (sorted(new_contacts, key=Contact.id_or_max) ==
+                sorted(app.contact.get_contact_list_in_group(group.name),
+                                                                     key=Contact.id_or_max))
