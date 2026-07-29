@@ -38,6 +38,18 @@ def test_contact_not_in_group_on_home_page(app):
     assert contact_from_home_page.all_phones_from_home_page == test_phones.merge_phones_like_on_home_page(contact_from_edit_page)
 
 
+    print("contact_from_home_page: ", contact_from_home_page)
+    print("contact_from_edit_page: ", contact_from_edit_page)
+
+    print("contact_from_home_page_address: ", contact_from_home_page.address)
+    print("contact_from_edit_page_address: ", contact_from_edit_page.address)
+
+    print("contact_from_home_page_all_emails_from_home_page: ", contact_from_home_page.all_emails_from_home_page)
+    print("contact_from_edit_page_all_emails_from_home_page: ", merge_emails_like_on_home_page(contact_from_edit_page))
+
+    print("contact_from_home_page_all_phones_from_home_page: ", contact_from_home_page.all_phones_from_home_page)
+    print("contact_from_edit_page_all_phones_from_home_page: ", test_phones.merge_phones_like_on_home_page(contact_from_edit_page))
+
 # Добавлен метод получения строки без символов "пробел" с применением регулярных выражений
 # На первом месте указывается, что надо заменить, на втором - на что надо заменить, на третьем -
 # где надо заменить
