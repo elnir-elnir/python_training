@@ -666,6 +666,8 @@ class ContactHelper:
     # На тсранице с детальной информацией отсутствуют отдельные теги как для каждого телефона,
     # так и для блока телефонов (как это было на странице со списком контактов)
     # Поэтому вырезать номера телефонов надо с применением регулярных выражений
+    # Тест test_phones_on_contact_view_page падает при пустых полях. Пересмотреть лекцию
+    # (перепроверить метод). Или доработать метод.
     def get_contact_from_view_page(self, index):
         wd = self.app.wd
         self.open_contact_view_by_index(index)
@@ -678,3 +680,69 @@ class ContactHelper:
         mobile_phone = re.search("M: (.*)", text).group(1)
         work_phone = re.search("W: (.*)", text).group(1)
         return Contact(home_phone=home_phone, mobile_phone=mobile_phone, work_phone=work_phone)
+
+
+
+    '''Методы сравнения'''
+
+    # Метод сравнения полей контактов, где contact1 - контакт полученый из приложения, contact2 -
+    # контакт, полученный из базы данных (дз 21)
+    def assert_contacts(self, contact1, contact2):
+        assert contact1.firstname == contact2.firstname
+        assert contact1.lastname == contact2.lastname
+        assert contact1.address == contact2.address
+        assert (contact1.all_emails_from_home_page ==
+                self.merge_emails_like_on_home_page(contact2))
+        assert (contact1.all_phones_from_home_page ==
+                self.merge_phones_like_on_home_page(contact2))
+
+
+
+    '''Методы обработки'''
+
+    # Метод перенесен из файла test_phones.py в рамках дз 21
+    # Добавлен метод получения строки без символов "пробел", "минус", скобок с применением регулярных выражений
+    # На первом месте указывается, что надо заменить, на втором - на что надо заменить, на третьем -
+    # где надо заменить
+    def clear_brackets_space_and_hyphen(self, s):
+        return re.sub("[() -]", "", s)
+
+
+    # Метод перенесен из файла test_phones.py в рамках дз 21
+    # Добавляем метод склеивания строк (урок 5-6)
+    # Склеиваем при помощи перевода строки, используя функцию join, которой в качечтве параметров
+    # передаем список телефонов
+    # Исключаем элементы = None с помощью функции filter к списку (до применения функции map)
+    # Для очистки телефонов от дополнительных символов применяем map, чтобы применить метод clear
+    # ко всем элементам списка сразу
+    # А затем к результату функции map применяем filter того, чтобы не учитывать при склейке
+    # пустые телефоны
+    def merge_phones_like_on_home_page(self, contact):
+        return "\n".join(filter(lambda x: x != "",
+                                map(lambda x: self.clear_brackets_space_and_hyphen(x),
+                                    filter(lambda x: x is not None,
+                                           [contact.home_phone, contact.mobile_phone, contact.work_phone]))))
+
+
+    # Метод перенесен из файла test_contact_list.py в рамках дз 21
+    # Добавлен метод получения строки без символов "пробел" с применением регулярных выражений
+    # На первом месте указывается, что надо заменить, на втором - на что надо заменить, на третьем -
+    # где надо заменить
+    def clear_space(self, s):
+        return re.sub(" ", "", s)
+
+
+    # Метод перенесен из файла test_contact_list.py в рамках дз 21
+    # Добавляем метод склеивания строк (дз 14)
+    # Склеиваем при помощи перевода строки, используя функцию join, которой в качечтве параметров
+    # передаем список адресов электронной почты
+    # Исключаем элементы = None с помощью функции filter к списку (до применения функции map)
+    # Для очистки адресов электронной почты от дополнительных символов применяем map, чтобы применить
+    # метод clear ко всем элементам списка сразу
+    # А затем к результату функции map применяем filter того, чтобы не учитывать при склейке
+    # пустые адреса электронной почты
+    def merge_emails_like_on_home_page(self, contact):
+        return "\n".join(filter(lambda x: x != "",
+                                map(lambda x: self.clear_space(x),
+                                    filter(lambda x: x is not None,
+                                           [contact.email, contact.email2, contact.email3]))))

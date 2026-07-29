@@ -31,12 +31,13 @@ def test_contact_not_in_group_on_home_page(app):
     # Получаем информацию об этом контакте со странцы редактирования контакта
     contact_from_edit_page = app.contact.get_contact_info_with_address_and_email_from_edit_page(index)
 
-    assert contact_from_home_page.firstname == contact_from_edit_page.firstname
-    assert contact_from_home_page.lastname == contact_from_edit_page.lastname
-    assert contact_from_home_page.address == contact_from_edit_page.address
-    assert contact_from_home_page.all_emails_from_home_page == merge_emails_like_on_home_page(contact_from_edit_page)
-    assert contact_from_home_page.all_phones_from_home_page == test_phones.merge_phones_like_on_home_page(contact_from_edit_page)
+    # assert contact_from_home_page.firstname == contact_from_edit_page.firstname
+    # assert contact_from_home_page.lastname == contact_from_edit_page.lastname
+    # assert contact_from_home_page.address == contact_from_edit_page.address
+    # assert contact_from_home_page.all_emails_from_home_page == merge_emails_like_on_home_page(contact_from_edit_page)
+    # assert contact_from_home_page.all_phones_from_home_page == test_phones.merge_phones_like_on_home_page(contact_from_edit_page)
 
+    app.contact.assert_contacts(contact_from_home_page, contact_from_edit_page)
 
     print("contact_from_home_page: ", contact_from_home_page)
     print("contact_from_edit_page: ", contact_from_edit_page)
@@ -44,30 +45,38 @@ def test_contact_not_in_group_on_home_page(app):
     print("contact_from_home_page_address: ", contact_from_home_page.address)
     print("contact_from_edit_page_address: ", contact_from_edit_page.address)
 
-    print("contact_from_home_page_all_emails_from_home_page: ", contact_from_home_page.all_emails_from_home_page)
-    print("contact_from_edit_page_all_emails_from_home_page: ", merge_emails_like_on_home_page(contact_from_edit_page))
+    print("contact_from_home_page_all_emails_from_home_page: ",
+          contact_from_home_page.all_emails_from_home_page)
+    #print("contact_from_edit_page_all_emails_from_home_page: ",
+    # merge_emails_like_on_home_page(contact_from_edit_page))
+    print("contact_from_edit_page_all_emails_from_home_page: ",
+          app.contact.merge_emails_like_on_home_page(contact_from_edit_page))
 
-    print("contact_from_home_page_all_phones_from_home_page: ", contact_from_home_page.all_phones_from_home_page)
-    print("contact_from_edit_page_all_phones_from_home_page: ", test_phones.merge_phones_like_on_home_page(contact_from_edit_page))
-
-# Добавлен метод получения строки без символов "пробел" с применением регулярных выражений
-# На первом месте указывается, что надо заменить, на втором - на что надо заменить, на третьем -
-# где надо заменить
-def clear(s):
-    return re.sub(" ", "", s)
+    print("contact_from_home_page_all_phones_from_home_page: ",
+          contact_from_home_page.all_phones_from_home_page)
+    #print("contact_from_edit_page_all_phones_from_home_page: ",
+    # test_phones.merge_phones_like_on_home_page(contact_from_edit_page))
+    print("contact_from_edit_page_all_phones_from_home_page: ",
+          app.contact.merge_phones_like_on_home_page(contact_from_edit_page))
 
 
-# Добавляем метод склеивания строк (дз 14)
-# Склеиваем при помощи перевода строки, используя функцию join, которой в качечтве параметров
-# передаем список адресов электронной почты
-# Исключаем элементы = None с помощью функции filter к списку (до применения функции map)
-# Для очистки адресов электронной почты от дополнительных символов применяем map, чтобы применить
-# метод clear ко всем элементам списка сразу
-# А затем к результату функции map применяем filter того, чтобы не учитывать при склейке
-# пустые адреса электронной почты
-def merge_emails_like_on_home_page(contact):
-    return "\n".join(filter(lambda x: x != "",
-                            map(lambda x: clear(x),
-                                filter(lambda x: x is not None,
-                                       [contact.email, contact.email2, contact.email3]))))
-
+# # Добавлен метод получения строки без символов "пробел" с применением регулярных выражений
+# # На первом месте указывается, что надо заменить, на втором - на что надо заменить, на третьем -
+# # где надо заменить
+# def clear(s):
+#     return re.sub(" ", "", s)
+#
+#
+# # Добавляем метод склеивания строк (дз 14)
+# # Склеиваем при помощи перевода строки, используя функцию join, которой в качечтве параметров
+# # передаем список адресов электронной почты
+# # Исключаем элементы = None с помощью функции filter к списку (до применения функции map)
+# # Для очистки адресов электронной почты от дополнительных символов применяем map, чтобы применить
+# # метод clear ко всем элементам списка сразу
+# # А затем к результату функции map применяем filter того, чтобы не учитывать при склейке
+# # пустые адреса электронной почты
+# def merge_emails_like_on_home_page(contact):
+#     return "\n".join(filter(lambda x: x != "",
+#                             map(lambda x: clear(x),
+#                                 filter(lambda x: x is not None,
+#                                        [contact.email, contact.email2, contact.email3]))))

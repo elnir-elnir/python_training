@@ -63,6 +63,13 @@ class ORMFixture:
         firstname = Optional(str, column="firstname")
         middlename = Optional(str, column="middlename")
         lastname = Optional(str, column="lastname")
+        address = Optional(str, column="address")
+        home_phone = Optional(str, column="home")
+        mobile_phone = Optional(str, column="mobile")
+        work_phone = Optional(str, column="work")
+        email = Optional(str, column="email")
+        email2 = Optional(str, column="email2")
+        email3 = Optional(str, column="email3")
         bday = Optional(str, column="bday")
         bmonth = Optional(str, column="bmonth")
         deprecated = Optional(datetime, column="deprecated")
@@ -108,7 +115,11 @@ class ORMFixture:
     def convert_contacts_to_model(self, contacts):
         # Вспомогательная функция, конвертирующая одну отдельно взятую группу
         def convert(contact):
-            return Contact(id=str(contact.id), firstname=contact.firstname, lastname=contact.lastname)
+            return Contact(id=str(contact.id), firstname=contact.firstname, lastname=contact.lastname,
+                           address=contact.address, home_phone=contact.home_phone,
+                           mobile_phone=contact.mobile_phone, work_phone=contact.work_phone,
+                           email=contact.email, email2=contact.email2,
+                           email3=contact.email3)
 
         return list(map(convert, contacts))
 
