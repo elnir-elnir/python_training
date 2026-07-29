@@ -225,11 +225,24 @@ class ORMFixture:
             c for c in ORMFixture.ORMContact if c.deprecated is None))
 
 
-    # Метод получения списка контактов, включенных в группу, по id (урок 7-8)
+    # # Метод получения списка контактов, включенных в группу, по id (урок 7-8)
+    # @db_session
+    # def get_contacts_in_group(self, group):
+    #     orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == str(group.id)))[0]
+    #     return self.convert_contacts_to_model(orm_group.contacts)
+
+
+    # Метод получения списка контактов, включенных в группу, по id из урока 7-8 изменен в рамках
+    # дз 20, т. к. при выполнении теста после удаления контакта, включенного в группу, тест выполнялся
+    # с ошибкой: pony.orm.core.UnrepeatableReadError: Phantom object ORMContact[14] disappeared
+    # env\Lib\site-packages\pony\utils\utils.py:99: UnrepeatableReadError
+    # Process finished with exit code 1
     @db_session
     def get_contacts_in_group(self, group):
-        orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == str(group.id)))[0]
-        return self.convert_contacts_to_model(orm_group.contacts)
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact
+                   if c.deprecated is None
+                   and ORMFixture.ORMGroup.get(id=int(group.id)) in c.groups))
 
 
     # Метод получения списка контактов, которые не входят в заданную группу, по id (урок 7-8)

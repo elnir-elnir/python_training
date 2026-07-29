@@ -106,12 +106,25 @@ from model.group import Group
 #     pass
 
 
-# Получаем список контактов, которые входят в несколько групп, c помощью ORM (дз 20)
+# # Получаем список контактов, которые входят в несколько групп, c помощью ORM (дз 20)
+# db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+#
+# try:
+#     #l = db.get_contacts_in_group(Group(id="1344")) # включены в группу
+#     l = db.get_contacts_in_several_group()  # не включены в группу
+#     for item in l:
+#         print(item)
+#     print(len(l))
+# # ORM автоматически закрывает соединение с БД, поэтому блок finally не нужен - ставим заглушку
+# finally:
+#     pass
+
+
+# Получаем список контактов, которые входят в заданную групп, c помощью ORM (дз 20)
 db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
 
 try:
-    #l = db.get_contacts_in_group(Group(id="1344")) # включены в группу
-    l = db.get_contacts_in_several_group()  # не включены в группу
+    l = db.get_contacts_in_group(Group(id="1")) # включены в группу
     for item in l:
         print(item)
     print(len(l))
