@@ -72,6 +72,8 @@ def test_include_created_contact_in_custom_group_after_home_click(app, orm, chec
     contact = random.choice(orm.get_contacts_not_in_any_group())
     print("contact: ", contact)
 
+    old_contact_groups = orm.get_groups_for_contact(contact)
+
     old_contacts = orm.get_contacts_in_group(group)
     print("old_contacts: ", old_contacts)
 
@@ -82,11 +84,19 @@ def test_include_created_contact_in_custom_group_after_home_click(app, orm, chec
     old_contacts.append(contact)
     print("new_old_contacts: ", old_contacts)
 
+    old_contact_groups.append(group)
+
     new_contacts = orm.get_contacts_in_group(group)
     print("new_contacts: ", new_contacts)
 
+    new_contact_groups = orm.get_groups_for_contact(contact)
+
     assert len(old_contacts) == len(new_contacts)
     assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
+
+    assert len(old_contact_groups) == len(new_contact_groups)
+    assert sorted(old_contact_groups, key=Contact.id_or_max) == sorted(new_contact_groups,
+                                                                       key=Contact.id_or_max)
 
     if check_ui:
         assert (sorted(new_contacts, key=Contact.id_or_max) ==
