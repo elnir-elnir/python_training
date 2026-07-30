@@ -27,7 +27,7 @@ class ORMFixture:
 
     db = Database()
 
-    # Описание структуры таблиц
+    ''' Описание структуры таблиц '''
 
     # Описываем структуру таблицы group_list (урок 7-7)
     # Параметр db.Entity нужен для того, чтобы привязать этот класс к базе данных - к тому объекту,
@@ -101,7 +101,7 @@ class ORMFixture:
         sql_debug(True)
 
 
-    # Методы преобразования
+    ''' Методы преобразования'''
 
     # Метод преобразования объектов типа ORMGroup в модельные объекты (урок 7-7)
     def convert_groups_to_model(self, groups):
@@ -125,9 +125,9 @@ class ORMFixture:
 
 
 
-    # Функции, которые получают списки объектов
+    ''' Функции, которые получают списки объектов'''
 
-    ## Списки групп
+    ''' Списки групп '''
 
     # Получение списка групп (урок 7-7)
     # Каждый блок кода, в котором происходит взаимодействие с БД, должен быть особым образом помечен -
@@ -150,7 +150,32 @@ class ORMFixture:
     #         return self.convert_groups_to_model(select(g for g in ORMFixture.ORMGroup))
 
 
-    # Получение списка групп, содержащих более 1 контакта (дз 20)
+    # Получение списка групп, содержащих контакты (дз 20)
+    @db_session
+    def get_group_list_with_contacts(self):
+        # Получаем список всех групп
+        all_groups = list(select(g for g in ORMFixture.ORMGroup))
+
+        # Объявляем переменную для сохранения списка групп с несколькими контактами
+        result = []
+
+        # Для каждой группы из списка all_groups проверяем выполнение условий
+        for group in all_groups:
+            # Находим все контакты, у которых в таблице связей address_in_groups в поле group_id
+            # указан id текущей группы (по которой выполняется цикл) и в поле deprecated отображается
+            # 0000-00-00 00:00:00
+            contacts_in_group = list(
+                select(c for c in ORMFixture.ORMContact
+                       if c.deprecated is None and group in c.groups)
+            )
+            # Определяем количество контактов в текущей группе и при выполнении условия > 1 добавляем
+            # текущую группу в итоговый список result
+            if len(contacts_in_group) > 0:
+                result.append(group)
+        return self.convert_groups_to_model(result)
+
+
+    # Получение списка групп, содержащих более 1 контакта (дз 22)
     @db_session
     def get_group_list_with_several_contacts(self):
         # Получаем список всех групп
@@ -171,6 +196,31 @@ class ORMFixture:
             # Определяем количество контактов в текущей группе и при выполнении условия > 1 добавляем
             # текущую группу в итоговый список result
             if len(contacts_in_group) > 1:
+                result.append(group)
+        return self.convert_groups_to_model(result)
+
+
+    # Получение списка групп, содержащих 1 контакт (дз 22)
+    @db_session
+    def get_group_list_with_one_contact(self):
+        # Получаем список всех групп
+        all_groups = list(select(g for g in ORMFixture.ORMGroup))
+
+        # Объявляем переменную для сохранения списка групп с несколькими контактами
+        result = []
+
+        # Для каждой группы из списка all_groups проверяем выполнение условий
+        for group in all_groups:
+            # Находим все контакты, у которых в таблице связей address_in_groups в поле group_id
+            # указан id текущей группы (по которой выполняется цикл) и в поле deprecated отображается
+            # 0000-00-00 00:00:00
+            contacts_in_group = list(
+                select(c for c in ORMFixture.ORMContact
+                       if c.deprecated is None and group in c.groups)
+            )
+            # Определяем количество контактов в текущей группе и при выполнении условия > 1 добавляем
+            # текущую группу в итоговый список result
+            if len(contacts_in_group) == 1:
                 result.append(group)
         return self.convert_groups_to_model(result)
 
@@ -216,7 +266,7 @@ class ORMFixture:
         return group
 
 
-    ## Списки контактов
+    '''Списки контактов'''
 
     # Получение списка контактов (урок 7-7)
     @db_session

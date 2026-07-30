@@ -55,7 +55,42 @@ def test_include_contact_in_custom_group_on_creation(app, orm, check_ui):
                 sorted(app.contact.get_contact_list_in_group(group.name),
                        key=Contact.id_or_max))
         print("sorted(new_contacts): ", sorted(new_contacts, key=Contact.id_or_max))
-        print("app_contacts: ", sorted(app.contact.get_contact_list(), key=Contact.id_or_max))
+        print("app_contacts: ", sorted(app.contact.get_contact_list_in_group(group.name),
+                                       key=Contact.id_or_max))
+
+
+
+def test_include_created_contact_in_custom_group_after_home_click(app, orm, check_ui):
+    if len(orm.get_group_list()) == 0:
+        app.group.create(Group(name="test"))
+    group = random.choice(orm.get_group_list())
+    print("group: ", group)
+
+    if len(orm.get_contact_list()) == 0 or len(orm.get_contacts_not_in_any_group()) == 0:
+        app.data.create_contact_with_default_group()
+
+    contact = random.choice(orm.get_contacts_not_in_any_group())
+    print("contact: ", contact)
+
+    old_contacts = orm.get_contacts_in_group(group)
+    print("old_contacts: ", old_contacts)
+
+    app.contact.open_contact_list_via_home_button()
+    app.contact.select_contact_by_id(contact.id)
+    app.contact.set_group(group.name)
+
+    old_contacts.append(contact)
+    print("new_old_contacts: ", old_contacts)
+
+    new_contacts = orm.get_contacts_in_group(group)
+    print("new_contacts: ", new_contacts)
+
+    assert len(old_contacts) == len(new_contacts)
+    assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
+
+    if check_ui:
+        assert (sorted(new_contacts, key=Contact.id_or_max) ==
+                sorted(app.contact.get_contact_list_in_group(group.name), key=Contact.id_or_max))
 
 
 

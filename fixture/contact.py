@@ -593,7 +593,7 @@ class ContactHelper:
         # Проверяем наличие доступного кеша и возвращаем кешированное значение, если оно доступно
         if self.contact_in_group_cache is None:
             wd = self.app.wd
-            self.open_contact_list_via_home_button()
+            self.open_contact_list_via_addressbook_link()
             self.filter_contacts_by_group(group_name)
 
             # Объявляем список для хранения полученного списка в кеше (дз 12)
